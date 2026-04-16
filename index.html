@@ -1,1 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Guidebook</title>
+  <meta
+    name="description"
+    content="University Guidebook 本科项目数据库：支持大学展示、项目检索、筛选、排序与详情查看。"
+  />
+  <link rel="stylesheet" href="./app/css/main.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <!-- 顶部 -->
+    <header class="hero">
+      <div class="hero__inner">
+        <div class="hero__main">
+          <h1 class="hero__title">University Guidebook</h1>
+          <p class="hero__subtitle">
+            Undergraduate Program Database
+          </p>
+        </div>
 
+        <div class="hero__actions">
+          <button id="themeToggleBtn" class="icon-btn" type="button" aria-label="切换主题">
+            ◐
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主体 -->
+    <main class="page">
+      <!-- 数据加载状态 -->
+      <section class="status-bar" aria-live="polite">
+        <div id="loadingState" class="status-pill is-loading">正在加载数据…</div>
+        <div id="dataSummary" class="status-summary"></div>
+      </section>
+
+      <!-- 搜索区 -->
+      <section class="search-panel panel">
+        <div class="panel__body">
+          <label class="search-box" for="searchInput">
+            <span class="search-box__label">搜索</span>
+            <input
+              id="searchInput"
+              class="search-box__input"
+              type="text"
+              placeholder="搜索大学 / 项目 / 学院 / 校区 / 城市 / 国家"
+              autocomplete="off"
+            />
+          </label>
+        </div>
+      </section>
+
+      <!-- 筛选区 -->
+      <section class="filters-panel panel">
+        <div class="panel__head">
+          <h2 class="panel__title">筛选</h2>
+          <div class="panel__tools">
+            <button id="resetFiltersBtn" class="btn btn--secondary" type="button">重置筛选</button>
+            <button id="restoreEngOnlyBtn" class="btn btn--primary" type="button">仅查看英授项目</button>
+          </div>
+        </div>
+
+        <div class="panel__body">
+          <div class="filter-grid">
+            <div class="filter-field">
+              <label for="schoolSelect">大学</label>
+              <select id="schoolSelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="regionSelect">地区</label>
+              <select id="regionSelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="countrySelect">国家</label>
+              <select id="countrySelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="citySelect">城市</label>
+              <select id="citySelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="campusSelect">校区</label>
+              <select id="campusSelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="facultySelect">学院</label>
+              <select id="facultySelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="durationSelect">学制</label>
+              <select id="durationSelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="engTaughtSelect">授课语言</label>
+              <select id="engTaughtSelect">
+                <option value="all">全部</option>
+                <option value="true" selected>仅英授</option>
+                <option value="false">仅非英授</option>
+              </select>
+            </div>
+
+            <div class="filter-field">
+              <label for="cityScaleSelect">城市规模</label>
+              <select id="cityScaleSelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="climateSelect">气候</label>
+              <select id="climateSelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="languageSelect">语言环境</label>
+              <select id="languageSelect" multiple></select>
+            </div>
+
+            <div class="filter-field">
+              <label for="residencySelect">居留</label>
+              <select id="residencySelect" multiple></select>
+            </div>
+          </div>
+
+          <div id="activeFilterTags" class="active-tags"></div>
+        </div>
+      </section>
+
+      <!-- 排序与结果摘要 -->
+      <section class="sort-panel panel">
+        <div class="panel__body sort-bar">
+          <div class="sort-bar__left">
+            <div id="resultCount" class="result-count">0 个项目</div>
+          </div>
+
+          <div class="sort-bar__right">
+            <div class="sort-field">
+              <label for="sortMetricSelect">排序指标</label>
+              <select id="sortMetricSelect">
+                <option value="manifest_order">学校顺序</option>
+                <option value="qs">QS</option>
+                <option value="the">THE</option>
+                <option value="usnews">US News</option>
+                <option value="program">项目名称</option>
+                <option value="faculty">学院</option>
+                <option value="duration">学制</option>
+                <option value="city">城市</option>
+                <option value="country">国家</option>
+                <option value="city_scale">城市规模</option>
+                <option value="climate">气候</option>
+                <option value="language">语言环境</option>
+                <option value="residency">居留</option>
+              </select>
+            </div>
+
+            <div class="sort-field">
+              <label for="sortDirectionSelect">方向</label>
+              <select id="sortDirectionSelect">
+                <option value="asc" selected>升序</option>
+                <option value="desc">降序</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 数据看板 -->
+      <section class="dashboard-grid">
+        <article class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">学校覆盖</h2>
+          </div>
+          <div class="panel__body">
+            <div id="schoolCoverageStats" class="stats-list"></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">地区分布</h2>
+          </div>
+          <div class="panel__body">
+            <div id="regionStats" class="stats-list"></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">学制分布</h2>
+          </div>
+          <div class="panel__body">
+            <div id="durationStats" class="stats-list"></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">城市分布</h2>
+          </div>
+          <div class="panel__body">
+            <div id="cityStats" class="stats-list"></div>
+          </div>
+        </article>
+      </section>
+
+      <!-- 主表 -->
+      <section class="table-panel panel">
+        <div class="panel__head">
+          <h2 class="panel__title">本科项目明细表</h2>
+          <div class="panel__tools">
+            <button id="exportCsvBtn" class="btn btn--secondary" type="button">导出当前结果</button>
+          </div>
+        </div>
+
+        <div class="panel__body">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>学校顺序</th>
+                  <th>大学</th>
+                  <th>项目</th>
+                  <th>学院</th>
+                  <th>校区</th>
+                  <th>城市</th>
+                  <th>国家</th>
+                  <th>地区</th>
+                  <th>学制</th>
+                  <th>英授</th>
+                  <th>类型</th>
+                  <th>QS</th>
+                  <th>THE</th>
+                  <th>US News</th>
+                </tr>
+              </thead>
+              <tbody id="programTableBody">
+                <!-- JS 渲染 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 项目详情弹窗 -->
+  <dialog id="programDetailDialog" class="detail-dialog">
+    <div class="detail-dialog__header">
+      <div>
+        <h3 id="detailTitle" class="detail-dialog__title">项目详情</h3>
+        <p id="detailSubtitle" class="detail-dialog__subtitle"></p>
+      </div>
+      <button id="closeDetailBtn" class="icon-btn" type="button" aria-label="关闭详情">×</button>
+    </div>
+
+    <div class="detail-dialog__body">
+      <section class="detail-card">
+        <h4>基础信息</h4>
+        <dl class="detail-grid">
+          <div><dt>大学</dt><dd id="dUniversity"></dd></div>
+          <div><dt>项目</dt><dd id="dProgram"></dd></div>
+          <div><dt>学院</dt><dd id="dFaculty"></dd></div>
+          <div><dt>校区</dt><dd id="dCampus"></dd></div>
+          <div><dt>城市</dt><dd id="dCity"></dd></div>
+          <div><dt>国家</dt><dd id="dCountry"></dd></div>
+          <div><dt>地区</dt><dd id="dRegion"></dd></div>
+          <div><dt>学制</dt><dd id="dDuration"></dd></div>
+          <div><dt>英授</dt><dd id="dEngTaught"></dd></div>
+          <div><dt>类型</dt><dd id="dType"></dd></div>
+        </dl>
+      </section>
+
+      <section class="detail-card">
+        <h4>补充维度</h4>
+        <dl class="detail-grid">
+          <div><dt>城市规模</dt><dd id="dCityScale"></dd></div>
+          <div><dt>气候</dt><dd id="dClimate"></dd></div>
+          <div><dt>语言环境</dt><dd id="dLanguage"></dd></div>
+          <div><dt>居留</dt><dd id="dResidency"></dd></div>
+        </dl>
+      </section>
+
+      <section class="detail-card">
+        <h4>学校排名</h4>
+        <dl class="detail-grid">
+          <div><dt>QS</dt><dd id="dQs"></dd></div>
+          <div><dt>THE</dt><dd id="dThe"></dd></div>
+          <div><dt>US News</dt><dd id="dUsnews"></dd></div>
+        </dl>
+      </section>
+
+      <section class="detail-card">
+        <h4>链接</h4>
+        <div class="detail-link-row">
+          <a id="dUrl" href="#" target="_blank" rel="noopener noreferrer">查看项目官网</a>
+        </div>
+      </section>
+    </div>
+  </dialog>
+
+  <script type="module" src="./app/js/main.js"></script>
+</body>
+</html>
