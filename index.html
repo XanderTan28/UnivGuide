@@ -6,39 +6,41 @@
   <title>University Guidebook</title>
   <meta
     name="description"
-    content="University Guidebook 本科项目数据库：支持大学展示、项目检索、筛选、排序与详情查看。"
+    content="University Guidebook 本科项目数据库：支持大学展示、项目检索、筛选、排序与项目展开查看。"
   />
   <link rel="stylesheet" href="./app/css/main.css" />
 </head>
 <body>
   <div id="app" class="app-shell">
-    <!-- 顶部 -->
     <header class="hero">
       <div class="hero__inner">
         <div class="hero__main">
           <h1 class="hero__title">University Guidebook</h1>
-          <p class="hero__subtitle">
-            Undergraduate Program Database
-          </p>
+          <p class="hero__subtitle">Undergraduate Program Database</p>
         </div>
 
         <div class="hero__actions">
-          <button id="themeToggleBtn" class="icon-btn" type="button" aria-label="切换主题">
+          <button
+            id="themeToggleBtn"
+            class="icon-btn"
+            type="button"
+            aria-label="切换主题"
+            title="切换主题"
+          >
             ◐
           </button>
         </div>
       </div>
     </header>
 
-    <!-- 主体 -->
     <main class="page">
-      <!-- 数据加载状态 -->
+      <!-- 状态栏 -->
       <section class="status-bar" aria-live="polite">
         <div id="loadingState" class="status-pill is-loading">正在加载数据…</div>
         <div id="dataSummary" class="status-summary"></div>
       </section>
 
-      <!-- 搜索区 -->
+      <!-- 搜索 -->
       <section class="search-panel panel">
         <div class="panel__body">
           <label class="search-box" for="searchInput">
@@ -54,13 +56,17 @@
         </div>
       </section>
 
-      <!-- 筛选区 -->
+      <!-- 筛选 -->
       <section class="filters-panel panel">
         <div class="panel__head">
           <h2 class="panel__title">筛选</h2>
           <div class="panel__tools">
-            <button id="resetFiltersBtn" class="btn btn--secondary" type="button">重置筛选</button>
-            <button id="restoreEngOnlyBtn" class="btn btn--primary" type="button">仅查看英授项目</button>
+            <button id="resetFiltersBtn" class="btn btn--secondary" type="button">
+              重置筛选
+            </button>
+            <button id="restoreEngOnlyBtn" class="btn btn--primary" type="button">
+              仅查看英授项目
+            </button>
           </div>
         </div>
 
@@ -135,11 +141,11 @@
         </div>
       </section>
 
-      <!-- 排序与结果摘要 -->
+      <!-- 排序 -->
       <section class="sort-panel panel">
         <div class="panel__body sort-bar">
           <div class="sort-bar__left">
-            <div id="resultCount" class="result-count">0 个项目</div>
+            <div id="resultCount" class="result-count">0 所大学 / 0 个项目</div>
           </div>
 
           <div class="sort-bar__right">
@@ -155,6 +161,7 @@
                 <option value="duration">学制</option>
                 <option value="city">城市</option>
                 <option value="country">国家</option>
+                <option value="region">地区</option>
                 <option value="city_scale">城市规模</option>
                 <option value="climate">气候</option>
                 <option value="language">语言环境</option>
@@ -217,7 +224,9 @@
         <div class="panel__head">
           <h2 class="panel__title">本科项目明细表</h2>
           <div class="panel__tools">
-            <button id="exportCsvBtn" class="btn btn--secondary" type="button">导出当前结果</button>
+            <button id="exportCsvBtn" class="btn btn--secondary" type="button">
+              导出当前结果
+            </button>
           </div>
         </div>
 
@@ -237,7 +246,7 @@
                 </tr>
               </thead>
               <tbody id="programTableBody">
-                <!-- JS 渲染 -->
+                <!-- render.js 注入 -->
               </tbody>
             </table>
           </div>
@@ -246,26 +255,56 @@
     </main>
   </div>
 
+  <!-- 地区信息弹窗 -->
   <dialog id="locationDetailDialog" class="detail-dialog">
     <div class="detail-dialog__header">
       <div>
         <h3 id="locationDetailTitle" class="detail-dialog__title">地区信息</h3>
         <p id="locationDetailSubtitle" class="detail-dialog__subtitle"></p>
       </div>
-      <button id="closeLocationDetailBtn" class="icon-btn" type="button" aria-label="关闭">×</button>
+      <button
+        id="closeLocationDetailBtn"
+        class="icon-btn"
+        type="button"
+        aria-label="关闭"
+        title="关闭"
+      >
+        ×
+      </button>
     </div>
 
     <div class="detail-dialog__body">
       <section class="detail-card">
         <h4>城市信息</h4>
         <dl class="detail-grid">
-          <div><dt>城市</dt><dd id="locCity"></dd></div>
-          <div><dt>国家</dt><dd id="locCountry"></dd></div>
-          <div><dt>地区</dt><dd id="locRegion"></dd></div>
-          <div><dt>城市规模</dt><dd id="locCityScale"></dd></div>
-          <div><dt>气候</dt><dd id="locClimate"></dd></div>
-          <div><dt>语言环境</dt><dd id="locLanguage"></dd></div>
-          <div><dt>居留</dt><dd id="locResidency"></dd></div>
+          <div>
+            <dt>城市</dt>
+            <dd id="locCity"></dd>
+          </div>
+          <div>
+            <dt>国家</dt>
+            <dd id="locCountry"></dd>
+          </div>
+          <div>
+            <dt>地区</dt>
+            <dd id="locRegion"></dd>
+          </div>
+          <div>
+            <dt>城市规模</dt>
+            <dd id="locCityScale"></dd>
+          </div>
+          <div>
+            <dt>气候</dt>
+            <dd id="locClimate"></dd>
+          </div>
+          <div>
+            <dt>语言环境</dt>
+            <dd id="locLanguage"></dd>
+          </div>
+          <div>
+            <dt>居留</dt>
+            <dd id="locResidency"></dd>
+          </div>
         </dl>
       </section>
     </div>

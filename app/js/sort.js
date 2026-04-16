@@ -40,8 +40,11 @@ function comparePrograms(a, b, metric, direction) {
     case 'region':
       return compareNullableText(firstValue(a.region_list), firstValue(b.region_list), direction);
 
-    case 'language':
+    case 'language':{
+      const byOrder = compareNullableNumber(a.language_order, b.language_order, direction);
+      if (byOrder !== 0) return byOrder;
       return compareNullableText(firstValue(a.language_list), firstValue(b.language_list), direction);
+    }
 
     case 'city_scale': {
       const byOrder = compareNullableNumber(a.city_scale_order, b.city_scale_order, direction);

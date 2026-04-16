@@ -37,10 +37,6 @@ function buildCountryRegionMap(regionRows) {
   return indexBy(regionRows, 'country', 'region');
 }
 
-function buildCountryResidencyMap(residencyRows) {
-  return indexBy(residencyRows, 'country', 'residency');
-}
-
 function buildRankingMap(rows) {
   const map = {};
 
@@ -89,6 +85,40 @@ function getOrderForList(values, orderMap) {
   return Math.min(...numericOrders);
 }
 
+function buildLanguageMaps(rows) {
+  const difficultyMap = {};
+  const scoreMap = {};
+  const orderMap = {};
+
+  (rows || []).forEach((row) => {
+    const city = String(row?.city || '').trim();
+    if (!city) return;
+
+    const score = toNumberOrNull(row?.language_score);
+    const order = toNumberOrNull(
+      row?.sort_order ??
+      row?.sortOrder ??
+      row?.order ??
+      ''
+    );
+
+    if (score != null) {
+      scoreMap[city] = score;
+    }
+
+    if (order != null) {
+      difficultyMap[city] = `难度${order}`;
+      orderMap[city] = order;
+    }
+  });
+
+  return {
+    difficultyMap,
+    scoreMap,
+    orderMap
+  };
+}
+
 export function normalizePrograms(loaded) {
   const { mappings, schoolBundles } = loaded;
 
@@ -99,11 +129,16 @@ export function normalizePrograms(loaded) {
     buildValueOrderMaps(mappings.climateRows, 'city', 'climate');
 
   const countryMap = indexBy(mappings.countryRows, 'city', 'country');
-  const languageMap = indexBy(mappings.languageRows, 'city', 'language');
   const regionMap = buildCountryRegionMap(mappings.regionRows);
 
   const { valueMap: residencyMap, orderMap: residencyOrderMap } =
     buildValueOrderMaps(mappings.residencyRows, 'country', 'residency');
+
+  const {
+    difficultyMap: languageDifficultyMap,
+    scoreMap: languageScoreMap,
+    orderMap: languageOrderMap
+  } = buildLanguageMaps(mappings.languageRows);
 
   const rankingMap = buildRankingMap(mappings.rankingRows);
   const displayNameMap = buildDisplayNameMap(mappings.displayNameRows);
@@ -121,6 +156,7 @@ export function normalizePrograms(loaded) {
 
     (bundle.programRows || []).forEach((row) => {
       const campusList = splitPlusValues(row.campus);
+
       const cityList = unique(
         campusList
           .map((campus) => campusCityMap[campus])
@@ -144,7 +180,19 @@ export function normalizePrograms(loaded) {
       );
 
       const languageList = unique(
-        cityList.map((city) => languageMap[city]).filter(Boolean)
+        cityList.map((city) => languageDifficultyMap[city]).filter(Boolean)
+      );
+
+      const languageScoreList = unique(
+        cityList
+          .map((city) => languageScoreMap[city])
+          .filter((v) => v != null)
+      );
+
+      const languageOrderList = unique(
+        cityList
+          .map((city) => languageOrderMap[city])
+          .filter((v) => v != null)
       );
 
       const residencyList = unique(
@@ -168,7 +216,11 @@ export function normalizePrograms(loaded) {
 
         city_scale_list: cityScaleList,
         climate_list: climateList,
-        language_list: languageList,
+
+        language_list: languageList,                 // 给前端展示/筛选用：难度1、难度2……
+        language_score_list: languageScoreList,      // 给后续打分器用
+        language_order: languageOrderList.length ? Math.min(...languageOrderList) : null,
+
         residency_list: residencyList,
 
         city_scale_order: getOrderForList(cityScaleList, cityScaleOrderMap),
