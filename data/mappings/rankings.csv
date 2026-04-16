@@ -1,56 +1,56 @@
-﻿slug,qs,the,usnews
-HKU,11,35,44
-NUS,8,17,26
-ETH,7,11,29
-NTU,12,30,30
-HKUST,44,60,95
-CUHK,32,50,53
-Melbourne,19,37,30
-TUM,22,27,79
-EPFL,22,35,86
-Sydney,25,53,29
-UNSW,20,79,34
-PSL,28,48,105
-IP Paris,41,68,71
-ANU,32,73,86
-UvA,53,62,33
-TU Delft,47,57,151
-PolyU,57,84,100
-CityU,62,80,115
-Monash,36,58,38
-UQ,42,80,43
-TUM,22,27,79
-LMU,58,34,57
-Sorbonne,72,76,62
-Paris-Saclay,70,68,78
-SUAD,72,76,62
-KU Leuven,63,42,50
-Auckland,65,156,128
-UWA,77,153,98
-Adelaide,82,133,99
-Copenhagen,101,90,41
-Heidelberg,80,171,59
-UZH,100,126,59
-KTH,78,98,201
-Utrecht,103,66,49
-Leiden,119,70,56
-TCD,87,134,215
-UTS,96,145,83
-FU Berlin,88,113,59
-Humboldt,130,89,47
-Lund,82,103,95
-Uppsala,93,128,150
-Polimi,98,225,297
-Barcelona,160,145,82
-Oslo,119,113,100
-Erasmus,140,107,76
-VU Amsterdam,194,176,79
-Groningen,147,82,75
-WUR,153,66,115
-KIT,98,166,119
-Vienna,152,95,212
-Bonn,207,92,164
-Tübingen,215,98,200
-Paris Cité,300,190,47
-Ghent,162,115,107
-RWTH Aachen,105,66,225
+slug,qs,the,usnews
+hku,11,35,44
+nus,8,17,26
+eth,7,11,29
+ntu,12,30,30
+hkust,44,60,95
+cuhk,32,50,53
+melbourne,19,37,30
+tum,22,27,79
+epfl,22,35,86
+sydney,25,53,29
+unsw,20,79,34
+psl,28,48,105
+ip paris,41,68,71
+anu,32,73,86
+uva,53,62,33
+tu delft,47,57,151
+polyu,57,84,100
+cityu,62,80,115
+monash,36,58,38
+uq,42,80,43
+tum,22,27,79
+lmu,58,34,57
+sorbonne,72,76,62
+paris-saclay,70,68,78
+suad,72,76,62
+ku leuven,63,42,50
+auckland,65,156,128
+uwa,77,153,98
+adelaide,82,133,99
+copenhagen,101,90,41
+heidelberg,80,171,59
+uzh,100,126,59
+kth,78,98,201
+utrecht,103,66,49
+leiden,119,70,56
+tcd,87,134,215
+uts,96,145,83
+fu berlin,88,113,59
+humboldt,130,89,47
+lund,82,103,95
+uppsala,93,128,150
+polimi,98,225,297
+barcelona,160,145,82
+oslo,119,113,100
+erasmus,140,107,76
+vu amsterdam,194,176,79
+groningen,147,82,75
+wur,153,66,115
+kit,98,166,119
+vienna,152,95,212
+bonn,207,92,164
+tübingen,215,98,200
+paris cité,300,190,47
+ghent,162,115,107
+rwth aachen,105,66,225
