@@ -1,0 +1,56 @@
+﻿pRank,category,city,university,uniColor,program,year,qs,the,usnews,engTaught
+1,港新,香港,香港大学 (HKU),red,Artificial Intelligence and Data Science,4,11,35,44,TRUE
+2,港新,新加坡,新加坡国立大学 (NUS),red,Data Science and Analytics,4,8,17,26,TRUE
+3,欧洲,苏黎世,苏黎世联邦理工学院 (ETH),gray,Computational Science and Engineering,3,7,11,29,FALSE
+4,港新,新加坡,南洋理工大学 (NTU),red,Computing (Data Science and Artificial Intelligence),4,12,30,30,TRUE
+5,港新,香港,香港科技大学 (HKUST),red,Data Science and Technology,4,44,60,95,TRUE
+6,港新,香港,香港中文大学 (CUHK),red,Computational Data Science,4,32,50,53,TRUE
+7,大洋,墨尔本,墨尔本大学 (Melbourne),red,Data Science,3,19,37,30,TRUE
+8,欧洲,慕尼黑,慕尼黑工业大学 (TUM),gray,Mathematics,3,22,27,79,FALSE
+9,欧洲,洛桑,洛桑联邦理工学院 (EPFL),gray,Mathematics,3,22,35,86,FALSE
+10,大洋,悉尼,悉尼大学 (Sydney),red,Data Science,3,25,53,29,TRUE
+11,大洋,悉尼,新南威尔士大学 (UNSW),red,Statistics,3,20,79,34,TRUE
+12,欧洲,巴黎,巴黎文理大学 (PSL),red,Artificial Intelligence (IBSAI),3,28,48,105,TRUE
+13,欧洲,巴黎,巴黎理工学院 (IP Paris),red,Mathematics and Computer Science,3,41,68,71,TRUE
+14,大洋,堪培拉,澳洲国立大学 (ANU),orange,Statistics,3,32,73,86,TRUE
+15,欧洲,阿姆斯特丹,阿姆斯特丹大学 (UvA),orange,Econometrics and Data Science / Actuarial Science,3,53,62,33,TRUE
+16,欧洲,代尔夫特,代尔夫特理工大学 (TU Delft),orange,Computer Science and Engineering,3,47,57,151,TRUE
+17,港新,香港,香港理工大学 (PolyU),orange,Data Science and Analytics,4,57,84,100,TRUE
+18,港新,香港,香港城市大学 (CityU),orange,Data Science,4,62,80,115,TRUE
+19,大洋,墨尔本,蒙纳士大学 (Monash),orange,Computer Science (Data Science and AI),3,36,58,38,TRUE
+20,大洋,布里斯班,昆士兰大学 (UQ),orange,Statistics and Mathematical Data Science,3,42,80,43,TRUE
+21,欧洲,海尔布隆,慕尼黑工业大学海尔布隆校区 (TUM),green,Management & Data Science,3,22,27,79,FALSE
+22,欧洲,慕尼黑,慕尼黑大学 (LMU),gray,Statistics and Data Science,3,58,34,57,FALSE
+23,欧洲,巴黎,索邦大学 (Sorbonne),gray,Double licence Informatique - Mathématiques,3,72,76,62,FALSE
+24,欧洲,巴黎,巴黎萨克雷大学 (Paris-Saclay),gray,Computer Science and Mathematical Engineering,3,70,68,78,FALSE
+25,中东,阿布扎比,索邦大学阿布扎比校区 (SUAD),green,"Mathematics, Specialisation in Data Science for Artificial Intelligence",3,72,76,62,TRUE
+26,欧洲,鲁汶,鲁汶大学 (KU Leuven),green,Engineering Technology (Electronics and ICT),3,63,42,50,TRUE
+27,大洋,奥克兰,奥克兰大学 (Auckland),green,Data Science,3,65,156,128,TRUE
+28,大洋,珀斯,西澳大学 (UWA),green,Data Science,3,77,153,98,TRUE
+29,大洋,阿德莱德,阿德莱德大学 (Adelaide),green,Data Science,3,82,133,99,TRUE
+30,欧洲,哥本哈根,哥本哈根大学 (Copenhagen),gray,Machine Learning and Data Science,3,101,90,41,FALSE
+31,欧洲,海德堡,海德堡大学 (Heidelberg),gray,Computer Science,3,80,171,59,FALSE
+32,欧洲,苏黎世,苏黎世大学 (UZH),green,Applied Mathematics and Machine Learning,3,100,126,59,TRUE
+33,欧洲,斯德哥尔摩,皇家理工学院 (KTH),green,Information and Communication Technology,3,78,98,201,TRUE
+34,欧洲,乌得勒支,乌得勒支大学 (Utrecht),gray,Mathematics,3,103,66,49,FALSE
+35,欧洲,莱顿,莱顿大学 (Leiden),green,Data Science and Artificial Intelligence,3,119,70,56,TRUE
+36,欧洲,都柏林,都柏林圣三一学院 (TCD),green,Mathematics,4,87,134,215,TRUE
+37,大洋,悉尼,悉尼科技大学 (UTS),blue,Statistics and Data Science,3,96,145,83,TRUE
+38,欧洲,柏林,柏林自由大学 (FU Berlin),gray,Mathematics,3,88,113,59,FALSE
+39,欧洲,柏林,柏林洪堡大学 (Humboldt),gray,Computer Science,3,130,89,47,FALSE
+40,欧洲,隆德,隆德大学 (Lund),blue,Mathematics,3,82,103,95,TRUE
+41,欧洲,乌普萨拉,乌普萨拉大学 (Uppsala),blue,Game Design and Programming,3,93,128,150,TRUE
+42,欧洲,米兰,米兰理工大学 (Polimi),gray,Mathematical Engineering,3,98,225,297,FALSE
+43,欧洲,巴塞罗那,巴塞罗那大学 (Barcelona),gray,Computer Engineering,4,160,145,82,FALSE
+44,欧洲,奥斯陆,奥斯陆大学 (Oslo),gray,Mathematics with Informatics (Data Science),3,119,113,100,FALSE
+45,欧洲,鹿特丹,伊拉斯姆斯大学 (Erasmus),blue,Econometrics and Operations Research,3,140,107,76,TRUE
+46,欧洲,阿姆斯特丹,阿姆斯特丹自由大学 (VU Amsterdam),blue,Artificial Intelligence,3,194,176,79,TRUE
+47,欧洲,格罗宁根,格罗宁根大学 (Groningen),blue,Artificial Intelligence,3,147,82,75,TRUE
+48,欧洲,瓦赫宁根,瓦赫宁根大学 (WUR),blue,Data Science for Global Challenges,3,153,66,115,TRUE
+49,欧洲,卡尔斯鲁厄,卡尔斯鲁厄理工学院 (KIT),gray,Computational and Data Science,3,98,166,119,FALSE
+50,欧洲,维也纳,维也纳大学 (Vienna),blue,Mathematical Foundations of Data Science,3,152,95,212,TRUE
+51,欧洲,波恩,波恩大学 (Bonn),gray,Mathematics,3,207,92,164,FALSE
+52,欧洲,图宾根,图宾根大学 (Tübingen),gray,Computer Science,3,215,98,200,FALSE
+53,欧洲,巴黎,巴黎西岱大学 (Paris Cité),gray,Information Technology,3,300,190,47,FALSE
+54,欧洲,根特,根特大学 (Ghent),gray,Mathematics,3,162,115,107,FALSE
+55,欧洲,亚琛,亚琛工业大学 (RWTH Aachen),gray,Mathematics,3,105,66,225,FALSE
