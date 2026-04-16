@@ -226,17 +226,11 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>学校顺序</th>
+                  <th>排位</th>
                   <th>大学</th>
-                  <th>项目</th>
-                  <th>学院</th>
-                  <th>校区</th>
                   <th>城市</th>
                   <th>国家</th>
                   <th>地区</th>
-                  <th>学制</th>
-                  <th>英授</th>
-                  <th>类型</th>
                   <th>QS</th>
                   <th>THE</th>
                   <th>US News</th>
@@ -252,57 +246,27 @@
     </main>
   </div>
 
-  <!-- 项目详情弹窗 -->
-  <dialog id="programDetailDialog" class="detail-dialog">
+  <dialog id="locationDetailDialog" class="detail-dialog">
     <div class="detail-dialog__header">
       <div>
-        <h3 id="detailTitle" class="detail-dialog__title">项目详情</h3>
-        <p id="detailSubtitle" class="detail-dialog__subtitle"></p>
+        <h3 id="locationDetailTitle" class="detail-dialog__title">地区信息</h3>
+        <p id="locationDetailSubtitle" class="detail-dialog__subtitle"></p>
       </div>
-      <button id="closeDetailBtn" class="icon-btn" type="button" aria-label="关闭详情">×</button>
+      <button id="closeLocationDetailBtn" class="icon-btn" type="button" aria-label="关闭">×</button>
     </div>
 
     <div class="detail-dialog__body">
       <section class="detail-card">
-        <h4>基础信息</h4>
+        <h4>城市信息</h4>
         <dl class="detail-grid">
-          <div><dt>大学</dt><dd id="dUniversity"></dd></div>
-          <div><dt>项目</dt><dd id="dProgram"></dd></div>
-          <div><dt>学院</dt><dd id="dFaculty"></dd></div>
-          <div><dt>校区</dt><dd id="dCampus"></dd></div>
-          <div><dt>城市</dt><dd id="dCity"></dd></div>
-          <div><dt>国家</dt><dd id="dCountry"></dd></div>
-          <div><dt>地区</dt><dd id="dRegion"></dd></div>
-          <div><dt>学制</dt><dd id="dDuration"></dd></div>
-          <div><dt>英授</dt><dd id="dEngTaught"></dd></div>
-          <div><dt>类型</dt><dd id="dType"></dd></div>
+          <div><dt>城市</dt><dd id="locCity"></dd></div>
+          <div><dt>国家</dt><dd id="locCountry"></dd></div>
+          <div><dt>地区</dt><dd id="locRegion"></dd></div>
+          <div><dt>城市规模</dt><dd id="locCityScale"></dd></div>
+          <div><dt>气候</dt><dd id="locClimate"></dd></div>
+          <div><dt>语言环境</dt><dd id="locLanguage"></dd></div>
+          <div><dt>居留</dt><dd id="locResidency"></dd></div>
         </dl>
-      </section>
-
-      <section class="detail-card">
-        <h4>补充维度</h4>
-        <dl class="detail-grid">
-          <div><dt>城市规模</dt><dd id="dCityScale"></dd></div>
-          <div><dt>气候</dt><dd id="dClimate"></dd></div>
-          <div><dt>语言环境</dt><dd id="dLanguage"></dd></div>
-          <div><dt>居留</dt><dd id="dResidency"></dd></div>
-        </dl>
-      </section>
-
-      <section class="detail-card">
-        <h4>学校排名</h4>
-        <dl class="detail-grid">
-          <div><dt>QS</dt><dd id="dQs"></dd></div>
-          <div><dt>THE</dt><dd id="dThe"></dd></div>
-          <div><dt>US News</dt><dd id="dUsnews"></dd></div>
-        </dl>
-      </section>
-
-      <section class="detail-card">
-        <h4>链接</h4>
-        <div class="detail-link-row">
-          <a id="dUrl" href="#" target="_blank" rel="noopener noreferrer">查看项目官网</a>
-        </div>
       </section>
     </div>
   </dialog>
