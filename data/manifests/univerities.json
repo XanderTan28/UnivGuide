@@ -1,7 +1,8 @@
 [
   {
     "slug": "hku",
-    "university": "University of Hong Kong",
+    "university": "The University of Hong Kong",
     "enabled": true
+    "uniColor": "red"
   }
 ]
