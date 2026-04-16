@@ -2,7 +2,7 @@
   {
     "slug": "hku",
     "university": "The University of Hong Kong",
-    "enabled": true
+    "enabled": true,
     "uniColor": "red"
   }
 ]

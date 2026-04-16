@@ -1,4 +1,4 @@
-﻿slug,full_slug
+﻿slug,display_name
 hku,HKU
 nus,NUS
 eth,ETH
@@ -11,20 +11,19 @@ epfl,EPFL
 sydney,Sydney
 unsw,UNSW
 psl,PSL
-ip paris,IP Paris
+ip_paris,IP Paris
 anu,ANU
 uva,UvA
-tu delft,TU Delft
+tu_delft,TU Delft
 polyu,PolyU
 cityu,CityU
 monash,Monash
 uq,UQ
-tum,TUM
 lmu,LMU
 sorbonne,Sorbonne
 paris-saclay,Paris-Saclay
 suad,SUAD
-ku leuven,KU Leuven
+ku_leuven,KU Leuven
 auckland,Auckland
 uwa,UWA
 adelaide,Adelaide
@@ -44,13 +43,13 @@ polimi,Polimi
 barcelona,Barcelona
 oslo,Oslo
 erasmus,Erasmus
-vu amsterdam,VU Amsterdam
+vu_amsterdam,VU Amsterdam
 groningen,Groningen
 wur,WUR
 kit,KIT
 vienna,Vienna
 bonn,Bonn
-t眉bingen,Tübingen
-paris cit茅,Paris Cité
+tubingen,Tübingen
+paris_cite,Paris Cité
 ghent,Ghent
-rwth aachen,RWTH Aachen
+rwth_aachen,RWTH Aachen
