@@ -1,6 +1,7 @@
 import {
   matchesSearch,
-  hasIntersection
+  hasIntersection,
+  languageLabelMap
 } from './utils.js';
 
 function sortValuesByOrderThenLabel(values, orderMap = null) {
@@ -22,33 +23,41 @@ function sortValuesByOrderThenLabel(values, orderMap = null) {
   });
 }
 
-function collectOrderedOptions(programs, listKey, orderKey) {
-  const valueSet = new Set();
-  const orderMap = {};
+function unique(values) {
+  return [...new Set((values || []).filter(Boolean))];
+}
 
-  (programs || []).forEach((program) => {
-    const values = program?.[listKey] || [];
-    const order = program?.[orderKey];
+function buildDisplayOrderMapFromRows(rows, valueField) {
+  const map = {};
 
-    values.forEach((value) => {
-      if (!value) return;
+  (rows || []).forEach((row) => {
+    const value = String(row?.[valueField] || '').trim();
+    const order = Number(row?.sort_order);
 
-      valueSet.add(value);
-
-      if (order != null) {
-        if (orderMap[value] == null) {
-          orderMap[value] = order;
-        } else {
-          orderMap[value] = Math.min(orderMap[value], order);
-        }
-      }
-    });
+    if (!value || !Number.isFinite(order)) return;
+    if (map[value] == null) {
+      map[value] = order;
+    }
   });
 
-  return {
-    values: sortValuesByOrderThenLabel([...valueSet], orderMap),
-    orderMap
-  };
+  return map;
+}
+
+function buildLanguageDisplayOrderMap(rows) {
+
+  const map = {};
+
+  (rows || []).forEach((row) => {
+    const order = Number(row?.sort_order);
+    const label = languageLabelMap[order];
+
+    if (!label || !Number.isFinite(order)) return;
+    if (map[label] == null) {
+      map[label] = order;
+    }
+  });
+
+  return map;
 }
 
 function matchArray(selectedValues, itemValues) {
@@ -80,7 +89,7 @@ export function applyFilters(programs, ui) {
     ) {
       return false;
     }
-    
+
     if (!matchArray(ui.engTaught, [normalizeEngTaught(program.eng_taught)])) {
       return false;
     }
@@ -103,7 +112,7 @@ export function normalizeEngTaught(value) {
   return 'unknown';
 }
 
-export function buildFilterOptions(programs) {
+export function buildFilterOptions(programs, mappings) {
   const options = {
     schools: new Set(),
     regions: new Set(),
@@ -121,17 +130,22 @@ export function buildFilterOptions(programs) {
     (program.country_list || []).forEach((v) => options.countries.add(v));
     (program.city_list || []).forEach((v) => options.cities.add(v));
     (program.campus_list || []).forEach((v) => options.campuses.add(v));
-
     (program.faculty_group_list || []).forEach((v) => options.facultyGroups.add(v));
-    if (program.duration) options.durations.add(program.duration);
 
-
+    if (program.duration) {
+      options.durations.add(program.duration);
+    }
   });
 
-  const cityScaleMeta = collectOrderedOptions(programs, 'city_scale_list', 'city_scale_order');
-  const climateMeta = collectOrderedOptions(programs, 'climate_list', 'climate_order');
-  const languageMeta = collectOrderedOptions(programs, 'language_list', 'language_order');
-  const residencyMeta = collectOrderedOptions(programs, 'residency_list', 'residency_order');
+  const cityScaleValues = unique((programs || []).flatMap((p) => p.city_scale_list || []));
+  const climateValues = unique((programs || []).flatMap((p) => p.climate_list || []));
+  const languageValues = unique((programs || []).flatMap((p) => p.language_list || []));
+  const residencyValues = unique((programs || []).flatMap((p) => p.residency_list || []));
+
+  const cityScaleOrderMap = buildDisplayOrderMapFromRows(mappings?.cityScaleRows, 'city_scale');
+  const climateOrderMap = buildDisplayOrderMapFromRows(mappings?.climateRows, 'climate');
+  const residencyOrderMap = buildDisplayOrderMapFromRows(mappings?.residencyRows, 'residency');
+  const languageOrderMap = buildLanguageDisplayOrderMap(mappings?.languageRows);
 
   return {
     schools: [...options.schools].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
@@ -141,9 +155,9 @@ export function buildFilterOptions(programs) {
     campuses: [...options.campuses].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
     facultyGroups: [...options.facultyGroups].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
     durations: [...options.durations].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
-    cityScales: cityScaleMeta.values,
-    climates: climateMeta.values,
-    languages: languageMeta.values,
-    residencies: residencyMeta.values
+    cityScales: sortValuesByOrderThenLabel(cityScaleValues, cityScaleOrderMap),
+    climates: sortValuesByOrderThenLabel(climateValues, climateOrderMap),
+    languages: sortValuesByOrderThenLabel(languageValues, languageOrderMap),
+    residencies: sortValuesByOrderThenLabel(residencyValues, residencyOrderMap)
   };
 }

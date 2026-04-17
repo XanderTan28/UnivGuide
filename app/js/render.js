@@ -322,8 +322,8 @@ function isSameSelection(selectedValues, defaultValues) {
   return selected.every((value, index) => value === defaults[index]);
 }
 
-function getDefaultFilterState(programs) {
-  const options = buildFilterOptions(programs);
+function getDefaultFilterState(programs, mappings) {
+  const options = buildFilterOptions(programs, mappings);
 
   return {
     schools: [...options.schools],
@@ -341,7 +341,7 @@ function getDefaultFilterState(programs) {
   };
 }
 
-function renderActiveTags(ui, programs, refresh = null) {
+function renderActiveTags(ui, programs, mappings, refresh = null) {
   const container = document.getElementById('activeFilterTags');
   if (!container) return;
 
@@ -353,7 +353,7 @@ function renderActiveTags(ui, programs, refresh = null) {
     }
   });
 
-  const defaults = getDefaultFilterState(programs);
+  const defaults = getDefaultFilterState(programs, mappings);
   const tags = [];
 
   if (ui.search) {
@@ -802,8 +802,8 @@ function renderProgramContinuationRows(school) {
     .join('');
 }
 
-export function renderFilterOptions(programs, ui) {
-  const options = buildFilterOptions(programs);
+export function renderFilterOptions(programs, ui, mappings) {
+  const options = buildFilterOptions(programs, mappings);
 
   renderCheckboxDropdown(
     'cityScaleSelect',
@@ -948,7 +948,7 @@ export function renderFilterOptions(programs, ui) {
     }
   }
 
-  renderActiveTags(ui, programs, window.__ug_refresh__);
+  renderActiveTags(ui, programs, mappings, window.__ug_refresh__);
 }
 
 export function renderSummary(filteredPrograms, allPrograms) {
@@ -1024,8 +1024,8 @@ export function renderTable(programs, sortMetric = 'manifest_order', sortDirecti
   bindLocationTriggers();
 }
 
-function resetUiState(ui, programs) {
-  const options = buildFilterOptions(programs);
+function resetUiState(ui, programs, mappings) {
+  const options = buildFilterOptions(programs, mappings);
 
   ui.search = '';
 
@@ -1062,7 +1062,7 @@ export function bindStaticEvents(state, refresh) {
   const resetFiltersBtn = document.getElementById('resetFiltersBtn');
   if (resetFiltersBtn) {
     resetFiltersBtn.addEventListener('click', () => {
-      resetUiState(ui, state.normalized);
+      resetUiState(ui, state.normalized, state.rawLoaded?.mappings);
       refresh();
     });
   }

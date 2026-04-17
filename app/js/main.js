@@ -37,7 +37,7 @@ function applyCurrentState() {
 
   state.filtered = filtered;
 
-  renderFilterOptions(state.normalized, state.ui);
+  renderFilterOptions(state.normalized, state.ui, state.rawLoaded?.mappings);
   bindDynamicFilterEvents(state, refresh);
   renderSummary(state.filtered, state.normalized);
   renderTable(state.filtered, state.ui.sortMetric, state.ui.sortDirection);
@@ -53,7 +53,7 @@ async function bootstrap() {
     state.rawLoaded = loaded;
     state.normalized = normalizePrograms(loaded);
 
-    const options = buildFilterOptions(state.normalized);
+    const options = buildFilterOptions(state.normalized, loaded.mappings);
 
     state.ui.schools = [...options.schools];
     state.ui.regions = [...options.regions];

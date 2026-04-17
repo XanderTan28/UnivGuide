@@ -1,3 +1,11 @@
+export const languageLabelMap = {
+  1: '能说中文',
+  2: '英文主导',
+  3: '都会英文',
+  4: '一半会英文',
+  5: '英文不方便'
+};
+
 export function parseCSV(text) {
   const cleaned = String(text || '').replace(/^\uFEFF/, '');
   const rows = [];
