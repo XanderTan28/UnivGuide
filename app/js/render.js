@@ -7,6 +7,7 @@ import {
 
 const expandedUniversitySet = new Set();
 let currentOpenDropdownHostId = null;
+const dropdownScrollTopMap = {};
 
 function setText(id, value) {
   const el = document.getElementById(id);
@@ -202,8 +203,9 @@ function bindDropdownInteractions(hostId, ui, uiKey, refresh) {
   const dropdown = host.querySelector('.filter-dropdown');
   const button = host.querySelector('.filter-dropdown__button');
   const panel = host.querySelector('.filter-dropdown__panel');
+  const list = host.querySelector('.filter-dropdown__list');
 
-  if (!dropdown || !button || !panel) return;
+  if (!dropdown || !button || !panel || !list) return;
 
   button.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -224,6 +226,8 @@ function bindDropdownInteractions(hostId, ui, uiKey, refresh) {
 
   panel.addEventListener('change', (e) => {
     e.stopPropagation();
+
+    dropdownScrollTopMap[hostId] = list.scrollTop;
 
     const target = e.target;
     if (!(target instanceof HTMLInputElement)) return;
@@ -338,7 +342,7 @@ function getDefaultFilterState(programs) {
   };
 }
 
-function renderActiveTags(ui, programs) {
+function renderActiveTags(ui, programs, refresh = null) {
   const container = document.getElementById('activeFilterTags');
   if (!container) return;
 
@@ -353,7 +357,13 @@ function renderActiveTags(ui, programs) {
   const defaults = getDefaultFilterState(programs);
   const tags = [];
 
-  if (ui.search) tags.push(`搜索：${ui.search}`);
+  if (ui.search) {
+    tags.push({
+      key: 'search',
+      value: ui.search,
+      label: `搜索：${ui.search}`
+    });
+  }
 
   if (!isSameSelection(ui.engTaught, defaults.engTaught)) {
     (ui.engTaught || []).forEach((v) => {
@@ -361,57 +371,137 @@ function renderActiveTags(ui, programs) {
         v === 'true' ? '英授' :
         v === 'false' ? '非英授' :
         '未知';
-      tags.push(`授课语言：${label}`);
+
+      tags.push({
+        key: 'engTaught',
+        value: v,
+        label: `授课语言：${label}`
+      });
     });
   }
 
   if (!isSameSelection(ui.schools, defaults.schools)) {
-    (ui.schools || []).forEach((v) => tags.push(`大学：${schoolMap[v] || v}`));
+    (ui.schools || []).forEach((v) => tags.push({
+      key: 'schools',
+      value: v,
+      label: `大学：${schoolMap[v] || v}`
+    }));
   }
 
   if (!isSameSelection(ui.regions, defaults.regions)) {
-    (ui.regions || []).forEach((v) => tags.push(`地区：${v}`));
+    (ui.regions || []).forEach((v) => tags.push({
+      key: 'regions',
+      value: v,
+      label: `地区：${v}`
+    }));
   }
 
   if (!isSameSelection(ui.countries, defaults.countries)) {
-    (ui.countries || []).forEach((v) => tags.push(`国家：${v}`));
+    (ui.countries || []).forEach((v) => tags.push({
+      key: 'countries',
+      value: v,
+      label: `国家：${v}`
+    }));
   }
 
   if (!isSameSelection(ui.cities, defaults.cities)) {
-    (ui.cities || []).forEach((v) => tags.push(`城市：${v}`));
+    (ui.cities || []).forEach((v) => tags.push({
+      key: 'cities',
+      value: v,
+      label: `城市：${v}`
+    }));
   }
 
   if (!isSameSelection(ui.campuses, defaults.campuses)) {
-    (ui.campuses || []).forEach((v) => tags.push(`校区：${v}`));
+    (ui.campuses || []).forEach((v) => tags.push({
+      key: 'campuses',
+      value: v,
+      label: `校区：${v}`
+    }));
   }
 
   if (!isSameSelection(ui.facultyGroups, defaults.facultyGroups)) {
-    (ui.facultyGroups || []).forEach((v) => tags.push(`学院大类：${v}`));
+    (ui.facultyGroups || []).forEach((v) => tags.push({
+      key: 'facultyGroups',
+      value: v,
+      label: `学院大类：${v}`
+    }));
   }
 
   if (!isSameSelection(ui.durations, defaults.durations)) {
-    (ui.durations || []).forEach((v) => tags.push(`学制：${v}`));
+    (ui.durations || []).forEach((v) => tags.push({
+      key: 'durations',
+      value: v,
+      label: `学制：${v}`
+    }));
   }
 
   if (!isSameSelection(ui.cityScales, defaults.cityScales)) {
-    (ui.cityScales || []).forEach((v) => tags.push(`城市规模：${v}`));
+    (ui.cityScales || []).forEach((v) => tags.push({
+      key: 'cityScales',
+      value: v,
+      label: `城市规模：${v}`
+    }));
   }
 
   if (!isSameSelection(ui.climates, defaults.climates)) {
-    (ui.climates || []).forEach((v) => tags.push(`气候：${v}`));
+    (ui.climates || []).forEach((v) => tags.push({
+      key: 'climates',
+      value: v,
+      label: `气候：${v}`
+    }));
   }
 
   if (!isSameSelection(ui.languages, defaults.languages)) {
-    (ui.languages || []).forEach((v) => tags.push(`语言环境：${v}`));
+    (ui.languages || []).forEach((v) => tags.push({
+      key: 'languages',
+      value: v,
+      label: `语言环境：${v}`
+    }));
   }
 
   if (!isSameSelection(ui.residencies, defaults.residencies)) {
-    (ui.residencies || []).forEach((v) => tags.push(`居留：${v}`));
+    (ui.residencies || []).forEach((v) => tags.push({
+      key: 'residencies',
+      value: v,
+      label: `居留：${v}`
+    }));
   }
 
   container.innerHTML = tags
-    .map((tag) => `<span class="filter-tag">${escapeHtml(tag)}</span>`)
+    .map((tag) => `
+      <button
+        type="button"
+        class="filter-tag filter-tag--removable"
+        data-tag-key="${escapeHtml(tag.key)}"
+        data-tag-value="${escapeHtml(tag.value)}"
+      >
+        <span class="filter-tag__text">${escapeHtml(tag.label)}</span>
+        <span class="filter-tag__remove">×</span>
+      </button>
+    `)
     .join('');
+
+  if (!refresh) return;
+
+  container.querySelectorAll('[data-tag-key]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+
+      const key = btn.dataset.tagKey;
+      const value = btn.dataset.tagValue;
+
+      if (!key) return;
+
+      if (key === 'search') {
+        ui.search = '';
+      } else if (Array.isArray(ui[key])) {
+        ui[key] = ui[key].filter((item) => String(item) !== String(value));
+      }
+
+      refresh();
+    });
+  });
 }
 
 function renderStatsList(containerId, items) {
@@ -769,12 +859,20 @@ export function renderFilterOptions(programs, ui) {
   if (currentOpenDropdownHostId) {
     const openHost = document.getElementById(currentOpenDropdownHostId);
     const openDropdown = openHost?.querySelector('.filter-dropdown');
+    const openList = openHost?.querySelector('.filter-dropdown__list');
+
     if (openDropdown) {
       openDropdown.classList.add('is-open');
     }
+
+    if (openList) {
+      requestAnimationFrame(() => {
+        openList.scrollTop = dropdownScrollTopMap[currentOpenDropdownHostId] || 0;
+      });
+    }
   }
 
-  renderActiveTags(ui, programs);
+  renderActiveTags(ui, programs, window.__ug_refresh__);
 }
 
 export function renderSummary(filteredPrograms, allPrograms) {
@@ -937,6 +1035,7 @@ function exportProgramsToCsv(programs) {
 
 export function bindStaticEvents(state, refresh) {
   const ui = state.ui;
+  window.__ug_refresh__ = refresh;
 
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
