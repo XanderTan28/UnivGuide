@@ -675,7 +675,7 @@ function renderSchoolMainRow(school, rank) {
       </td>
       <td>${renderProgramLink(program.program, program.url)}</td>
       <td>${escapeHtml(program.faculty_raw || '')}</td>
-      <td>${escapeHtml((program.campus_list || []).join(' + '))}</td>
+      <td>${escapeHtml((program.campus_list || []).join(', '))}</td>
       <td class="location-cell">${renderLocationCell('city', location)}</td>
       <td class="location-cell">${renderLocationCell('country', location)}</td>
       <td class="location-cell">${renderLocationCell('region', location)}</td>
@@ -706,7 +706,7 @@ function renderProgramContinuationRows(school) {
           <td></td>
           <td>${renderProgramLink(program.program, program.url)}</td>
           <td>${escapeHtml(program.faculty_raw || '')}</td>
-          <td>${escapeHtml((program.campus_list || []).join(' + '))}</td>
+          <td>${escapeHtml((program.campus_list || []).join(', '))}</td>
           <td class="location-cell">${renderLocationCell('city', location)}</td>
           <td class="location-cell">${renderLocationCell('country', location)}</td>
           <td class="location-cell">${renderLocationCell('region', location)}</td>
