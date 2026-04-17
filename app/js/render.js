@@ -29,26 +29,11 @@ function buildSchoolEntries(programs) {
     .sort((a, b) => a.label.localeCompare(b.label, 'zh-CN'));
 }
 
-function buildEntries(values, labelMap = null, orderMap = null) {
-  return (values || [])
-    .map((value) => ({
-      value,
-      label: labelMap?.[value] || value,
-      order: orderMap?.[value] ?? null
-    }))
-    .sort((a, b) => {
-      const aHasOrder = Number.isFinite(a.order);
-      const bHasOrder = Number.isFinite(b.order);
-
-      if (aHasOrder && bHasOrder && a.order !== b.order) {
-        return a.order - b.order;
-      }
-
-      if (aHasOrder && !bHasOrder) return -1;
-      if (!aHasOrder && bHasOrder) return 1;
-
-      return String(a.label).localeCompare(String(b.label), 'zh-CN');
-    });
+function buildEntries(values, labelMap = null) {
+  return (values || []).map((value) => ({
+    value,
+    label: labelMap?.[value] || value
+  }));
 }
 
 function summarizeSelected(entries, selectedValues, fallback = '全部') {
@@ -822,7 +807,7 @@ export function renderFilterOptions(programs, ui) {
 
   renderCheckboxDropdown(
     'cityScaleSelect',
-    buildEntries(options.cityScales, null, options.cityScaleOrderMap),
+    buildEntries(options.cityScales),
     ui.cityScales,
     '全部',
     '城市规模'
@@ -830,7 +815,7 @@ export function renderFilterOptions(programs, ui) {
 
   renderCheckboxDropdown(
     'climateSelect',
-    buildEntries(options.climates, null, options.climateOrderMap),
+    buildEntries(options.climates),
     ui.climates,
     '全部',
     '气候'
@@ -838,7 +823,7 @@ export function renderFilterOptions(programs, ui) {
 
   renderCheckboxDropdown(
     'languageSelect',
-    buildEntries(options.languages, null, options.languageOrderMap),
+    buildEntries(options.languages),
     ui.languages,
     '全部',
     '语言环境'
@@ -846,7 +831,7 @@ export function renderFilterOptions(programs, ui) {
 
   renderCheckboxDropdown(
     'residencySelect',
-    buildEntries(options.residencies, null, options.residencyOrderMap),
+    buildEntries(options.residencies),
     ui.residencies,
     '全部',
     '居留'
