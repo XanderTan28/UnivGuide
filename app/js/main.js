@@ -1,7 +1,6 @@
 import { loadAllData } from './data_loader.js';
 import { normalizePrograms } from './data_normalizer.js';
 import { applyFilters, buildFilterOptions } from './filters.js';
-import { sortPrograms } from './sort.js';
 import {
   renderFilterOptions,
   renderSummary,
@@ -35,14 +34,13 @@ const state = {
 
 function applyCurrentState() {
   const filtered = applyFilters(state.normalized, state.ui);
-  const sorted = sortPrograms(filtered, state.ui.sortMetric, state.ui.sortDirection);
 
-  state.filtered = sorted;
+  state.filtered = filtered;
 
   renderFilterOptions(state.normalized, state.ui);
   bindDynamicFilterEvents(state, refresh);
   renderSummary(state.filtered, state.normalized);
-  renderTable(state.filtered);
+  renderTable(state.filtered, state.ui.sortMetric, state.ui.sortDirection);
 }
 
 function refresh() {

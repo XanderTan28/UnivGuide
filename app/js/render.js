@@ -1,7 +1,9 @@
 import { buildFilterOptions } from './filters.js';
 import {
   escapeHtml,
-  textYesNo
+  textYesNo,
+  compareNullableNumber,
+  compareNullableText
 } from './utils.js';
 
 const expandedUniversitySet = new Set();
@@ -565,6 +567,74 @@ function buildProgramLocation(program) {
   };
 }
 
+function compareSchools(a, b, metric, direction) {
+  switch (metric) {
+    case 'manifest_order':
+      return compareNullableNumber(a.manifest_order, b.manifest_order, direction);
+
+    case 'qs':
+      return compareNullableNumber(a.qs, b.qs, direction);
+
+    case 'the':
+      return compareNullableNumber(a.the, b.the, direction);
+
+    case 'usnews':
+      return compareNullableNumber(a.usnews, b.usnews, direction);
+
+    case 'city':
+      return compareNullableText(a.sort_city, b.sort_city, direction);
+
+    case 'country':
+      return compareNullableText(a.sort_country, b.sort_country, direction);
+
+    case 'region':
+      return compareNullableText(a.sort_region, b.sort_region, direction);
+
+    case 'city_scale': {
+      const byOrder = compareNullableNumber(a.sort_city_scale_order, b.sort_city_scale_order, direction);
+      if (byOrder !== 0) return byOrder;
+      return compareNullableText(a.sort_city_scale, b.sort_city_scale, direction);
+    }
+
+    case 'climate': {
+      const byOrder = compareNullableNumber(a.sort_climate_order, b.sort_climate_order, direction);
+      if (byOrder !== 0) return byOrder;
+      return compareNullableText(a.sort_climate, b.sort_climate, direction);
+    }
+
+    case 'language': {
+      const byOrder = compareNullableNumber(a.sort_language_order, b.sort_language_order, direction);
+      if (byOrder !== 0) return byOrder;
+      return compareNullableText(a.sort_language, b.sort_language, direction);
+    }
+
+    case 'residency': {
+      const byOrder = compareNullableNumber(a.sort_residency_order, b.sort_residency_order, direction);
+      if (byOrder !== 0) return byOrder;
+      return compareNullableText(a.sort_residency, b.sort_residency, direction);
+    }
+
+    default:
+      return compareNullableNumber(a.manifest_order, b.manifest_order, direction);
+  }
+}
+
+function sortSchools(schools, metric = 'manifest_order', direction = 'asc') {
+  return [...(schools || [])].sort((a, b) => {
+    const primary = compareSchools(a, b, metric, direction);
+    if (primary !== 0) return primary;
+
+    const tie1 = compareNullableNumber(a.manifest_order, b.manifest_order, 'asc');
+    if (tie1 !== 0) return tie1;
+
+    return compareNullableText(
+      a.display_name || a.university_slug,
+      b.display_name || b.university_slug,
+      'asc'
+    );
+  });
+}
+
 function groupProgramsByUniversity(programs) {
   const map = new Map();
 
@@ -576,24 +646,36 @@ function groupProgramsByUniversity(programs) {
     map.get(slug).push(program);
   });
 
-  return [...map.entries()]
-    .map(([slug, items]) => {
-      const first = items[0];
-      const representativeProgram = getRepresentativeProgram(items);
+  return [...map.entries()].map(([slug, items]) => {
+    const first = items[0];
+    const representativeProgram = getRepresentativeProgram(items);
+    const location = buildProgramLocation(representativeProgram);
 
-      return {
-        university_slug: slug,
-        display_name: first.display_name || slug,
-        manifest_order: first.manifest_order,
-        qs: first.qs,
-        the: first.the,
-        usnews: first.usnews,
-        total_score: first.total_score ?? '',
-        representativeProgram,
-        programs: items
-      };
-    })
-    .sort((a, b) => a.manifest_order - b.manifest_order);
+    return {
+      university_slug: slug,
+      display_name: first.display_name || slug,
+      manifest_order: first.manifest_order,
+      qs: first.qs,
+      the: first.the,
+      usnews: first.usnews,
+      total_score: first.total_score ?? '',
+      representativeProgram,
+      programs: items,
+
+      sort_city: location.city || '',
+      sort_country: location.country || '',
+      sort_region: location.region || '',
+      sort_city_scale: location.cityScale || '',
+      sort_climate: location.climate || '',
+      sort_language: location.language || '',
+      sort_residency: location.residency || '',
+
+      sort_city_scale_order: representativeProgram?.city_scale_order ?? null,
+      sort_climate_order: representativeProgram?.climate_order ?? null,
+      sort_language_order: representativeProgram?.language_order ?? null,
+      sort_residency_order: representativeProgram?.residency_order ?? null
+    };
+  });
 }
 
 function buildLocationPayload(location) {
@@ -832,9 +914,6 @@ export function renderFilterOptions(programs, ui) {
       { value: 'qs', label: 'QS' },
       { value: 'the', label: 'THE' },
       { value: 'usnews', label: 'US News' },
-      { value: 'program', label: '项目名称' },
-      { value: 'faculty_group', label: '学院大类' },
-      { value: 'duration', label: '学制' },
       { value: 'city', label: '城市' },
       { value: 'country', label: '国家' },
       { value: 'region', label: '地区' },
@@ -844,7 +923,7 @@ export function renderFilterOptions(programs, ui) {
       { value: 'residency', label: '居留' }
     ],
     ui.sortMetric,
-    '排位',
+    '请选择',
     '排序指标'
   );
 
@@ -904,11 +983,12 @@ export function renderSummary(filteredPrograms, allPrograms) {
   );
 }
 
-export function renderTable(programs) {
+export function renderTable(programs, sortMetric = 'manifest_order', sortDirection = 'asc') {
   const tbody = document.getElementById('programTableBody');
   if (!tbody) return;
 
-  const schools = groupProgramsByUniversity(programs);
+  const groupedSchools = groupProgramsByUniversity(programs);
+  const schools = sortSchools(groupedSchools, sortMetric, sortDirection);
 
   if (!schools.length) {
     tbody.innerHTML = `
@@ -939,7 +1019,7 @@ export function renderTable(programs) {
         expandedUniversitySet.add(slug);
       }
 
-      renderTable(programs);
+      renderTable(programs, sortMetric, sortDirection);
     });
   });
 
