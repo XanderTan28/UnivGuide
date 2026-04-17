@@ -11,7 +11,7 @@ export function applyFilters(programs, ui) {
   return (programs || []).filter((program) => {
     if (!matchesSearch(program, ui.search)) return false;
 
-    if (!matchArray(ui.schools, [program.university_slug, program.university, program.display_name])) {
+    if (!matchArray(ui.schools, [program.university_slug, program.display_name])) {
       return false;
     }
 

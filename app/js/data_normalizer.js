@@ -150,8 +150,7 @@ export function normalizePrograms(loaded) {
     const campusCityMap = buildCampusCityMap(bundle.campusCityRows);
 
     const universitySlug = school.slug;
-    const universityName = school.university;
-    const displayName = displayNameMap[universitySlug] || universityName;
+    const displayName = displayNameMap[universitySlug] || universitySlug;
     const ranking = rankingMap[universitySlug] || { qs: null, the: null, usnews: null };
 
     (bundle.programRows || []).forEach((row) => {
@@ -198,10 +197,9 @@ export function normalizePrograms(loaded) {
       const residencyList = unique(
         countryList.map((country) => residencyMap[country]).filter(Boolean)
       );
-
+      
       const normalized = {
         university_slug: universitySlug,
-        university: universityName,
         display_name: displayName,
         manifest_order: bundle.manifest_order,
 

@@ -156,7 +156,6 @@ export function matchesSearch(program, keyword) {
   const fields = [
     program.program_id,
     program.university_slug,
-    program.university,
     program.display_name,
     program.program,
     program.faculty,

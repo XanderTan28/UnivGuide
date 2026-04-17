@@ -78,8 +78,8 @@ export function sortPrograms(programs, metric = 'manifest_order', direction = 'a
     if (tie1 !== 0) return tie1;
 
     const tie2 = compareNullableText(
-      a.display_name || a.university,
-      b.display_name || b.university,
+      a.display_name || a.university_slug,
+      b.display_name || b.university_slug,
       'asc'
     );
     if (tie2 !== 0) return tie2;

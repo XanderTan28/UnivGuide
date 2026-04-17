@@ -18,7 +18,7 @@ function buildSchoolEntries(programs) {
   (programs || []).forEach((program) => {
     if (!map[program.university_slug]) {
       map[program.university_slug] =
-        program.display_name || program.university || program.university_slug;
+        program.display_name || program.university_slug;
     }
   });
 
@@ -346,7 +346,7 @@ function renderActiveTags(ui, programs) {
   (programs || []).forEach((program) => {
     if (!schoolMap[program.university_slug]) {
       schoolMap[program.university_slug] =
-        program.display_name || program.university || program.university_slug;
+        program.display_name || program.university_slug;
     }
   });
 
@@ -494,7 +494,7 @@ function groupProgramsByUniversity(programs) {
 
       return {
         university_slug: slug,
-        display_name: first.display_name || first.university || slug,
+        display_name: first.display_name || slug,
         manifest_order: first.manifest_order,
         qs: first.qs,
         the: first.the,
@@ -788,7 +788,7 @@ export function renderSummary(filteredPrograms, allPrograms) {
 
   renderStatsList(
     'schoolCoverageStats',
-    countBy(filtered, (p) => p.display_name || p.university)
+    countBy(filtered, (p) => p.display_name || p.university_slug)
   );
 
   renderStatsList(
@@ -876,7 +876,6 @@ function exportProgramsToCsv(programs) {
   const headers = [
     'program_id',
     'university_slug',
-    'university',
     'display_name',
     'manifest_order',
     'program',
@@ -905,7 +904,6 @@ function exportProgramsToCsv(programs) {
       const row = [
         p.program_id,
         p.university_slug,
-        p.university,
         p.display_name,
         p.manifest_order,
         p.program,
