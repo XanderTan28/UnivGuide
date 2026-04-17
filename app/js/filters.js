@@ -19,13 +19,20 @@ export function applyFilters(programs, ui) {
     if (!matchArray(ui.countries, program.country_list)) return false;
     if (!matchArray(ui.cities, program.city_list)) return false;
     if (!matchArray(ui.campuses, program.campus_list)) return false;
-    if (!matchArray(ui.facultyGroups, program.faculty_group_list)) return false;
     if (!matchArray(ui.durations, [program.duration])) return false;
     if (!matchArray(ui.cityScales, program.city_scale_list)) return false;
     if (!matchArray(ui.climates, program.climate_list)) return false;
     if (!matchArray(ui.languages, program.language_list)) return false;
     if (!matchArray(ui.residencies, program.residency_list)) return false;
 
+    if (
+      ui.facultyGroups.length > 0 &&
+      program.faculty_group_list.length > 0 &&
+      !matchArray(ui.facultyGroups, program.faculty_group_list)
+    ) {
+      return false;
+    }
+    
     if (!matchArray(ui.engTaught, [normalizeEngTaught(program.eng_taught)])) {
       return false;
     }

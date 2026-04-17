@@ -1056,7 +1056,7 @@ export function bindStaticEvents(state, refresh) {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
-      ui.search = e.target.value.trim();
+      ui.search = e.target.value;
       refresh();
     });
   }
