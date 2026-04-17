@@ -3,6 +3,25 @@ import {
   hasIntersection
 } from './utils.js';
 
+function sortValuesByOrderThenLabel(values, orderMap = null) {
+  return [...(values || [])].sort((a, b) => {
+    const ao = orderMap?.[a];
+    const bo = orderMap?.[b];
+
+    const aHasOrder = Number.isFinite(ao);
+    const bHasOrder = Number.isFinite(bo);
+
+    if (aHasOrder && bHasOrder && ao !== bo) {
+      return ao - bo;
+    }
+
+    if (aHasOrder && !bHasOrder) return -1;
+    if (!aHasOrder && bHasOrder) return 1;
+
+    return String(a).localeCompare(String(b), 'zh-CN');
+  });
+}
+
 function matchArray(selectedValues, itemValues) {
   return hasIntersection(itemValues, selectedValues);
 }
@@ -67,7 +86,12 @@ export function buildFilterOptions(programs) {
     cityScales: new Set(),
     climates: new Set(),
     languages: new Set(),
-    residencies: new Set()
+    residencies: new Set(),
+
+    cityScaleOrderMap: {},
+    climateOrderMap: {},
+    languageOrderMap: {},
+    residencyOrderMap: {}
   };
 
   (programs || []).forEach((program) => {
@@ -77,13 +101,38 @@ export function buildFilterOptions(programs) {
     (program.country_list || []).forEach((v) => options.countries.add(v));
     (program.city_list || []).forEach((v) => options.cities.add(v));
     (program.campus_list || []).forEach((v) => options.campuses.add(v));
-    (program.city_scale_list || []).forEach((v) => options.cityScales.add(v));
-    (program.climate_list || []).forEach((v) => options.climates.add(v));
-    (program.language_list || []).forEach((v) => options.languages.add(v));
-    (program.residency_list || []).forEach((v) => options.residencies.add(v));
 
     (program.faculty_group_list || []).forEach((v) => options.facultyGroups.add(v));
     if (program.duration) options.durations.add(program.duration);
+
+    (program.city_scale_list || []).forEach((v) => {
+      options.cityScales.add(v);
+      if (program.city_scale_order != null && options.cityScaleOrderMap[v] == null) {
+        options.cityScaleOrderMap[v] = program.city_scale_order;
+      }
+    });
+
+    (program.climate_list || []).forEach((v) => {
+      options.climates.add(v);
+      if (program.climate_order != null && options.climateOrderMap[v] == null) {
+        options.climateOrderMap[v] = program.climate_order;
+      }
+    });
+
+    (program.language_list || []).forEach((v) => {
+      options.languages.add(v);
+      if (program.language_order != null && options.languageOrderMap[v] == null) {
+        options.languageOrderMap[v] = program.language_order;
+      }
+    });
+
+    (program.residency_list || []).forEach((v) => {
+      options.residencies.add(v);
+      if (program.residency_order != null && options.residencyOrderMap[v] == null) {
+        options.residencies.add(v);
+        options.residencyOrderMap[v] = program.residency_order;
+      }
+    });
   });
 
   return {
@@ -94,9 +143,14 @@ export function buildFilterOptions(programs) {
     campuses: [...options.campuses].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
     facultyGroups: [...options.facultyGroups].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
     durations: [...options.durations].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
-    cityScales: [...options.cityScales].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
-    climates: [...options.climates].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
-    languages: [...options.languages].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
-    residencies: [...options.residencies].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN'))
+    cityScales: sortValuesByOrderThenLabel([...options.cityScales], options.cityScaleOrderMap),
+    climates: sortValuesByOrderThenLabel([...options.climates], options.climateOrderMap),
+    languages: sortValuesByOrderThenLabel([...options.languages], options.languageOrderMap),
+    residencies: sortValuesByOrderThenLabel([...options.residencies], options.residencyOrderMap),
+
+    cityScaleOrderMap: options.cityScaleOrderMap,
+    climateOrderMap: options.climateOrderMap,
+    languageOrderMap: options.languageOrderMap,
+    residencyOrderMap: options.residencyOrderMap
   };
 }
