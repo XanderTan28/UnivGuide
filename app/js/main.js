@@ -50,14 +50,7 @@ function refresh() {
 }
 
 async function bootstrap() {
-  const loadingState = document.getElementById('loadingState');
-
   try {
-    if (loadingState) {
-      loadingState.textContent = '正在加载数据…';
-      loadingState.classList.add('is-loading');
-    }
-
     const loaded = await loadAllData();
     state.rawLoaded = loaded;
     state.normalized = normalizePrograms(loaded);
@@ -79,18 +72,8 @@ async function bootstrap() {
 
     applyCurrentState();
     bindStaticEvents(state, refresh);
-
-    if (loadingState) {
-      loadingState.textContent = '数据已加载';
-      loadingState.classList.remove('is-loading');
-    }
   } catch (error) {
     console.error(error);
-
-    if (loadingState) {
-      loadingState.textContent = '数据加载失败，请检查文件路径、字段名与 CSV 编码';
-      loadingState.classList.remove('is-loading');
-    }
   }
 }
 

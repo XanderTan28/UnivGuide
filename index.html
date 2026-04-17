@@ -13,33 +13,19 @@
 <body>
   <div id="app" class="app-shell">
     <header class="hero">
-      <div class="hero__inner">
-        <div class="hero__main">
-          <h1 class="hero__title">University Guidebook</h1>
-          <p class="hero__subtitle">Undergraduate Program Database</p>
-        </div>
-
-        <div class="hero__actions">
-          <button
-            id="themeToggleBtn"
-            class="icon-btn"
-            type="button"
-            aria-label="切换主题"
-            title="切换主题"
-          >
-            ◐
-          </button>
-        </div>
-      </div>
+      <h1>大学指南</h1>
+      <button
+        id="themeToggleBtn"
+        class="theme-toggle"
+        type="button"
+        aria-label="切换主题"
+        title="切换主题"
+      >
+        ◐
+      </button>
     </header>
 
     <main class="page">
-      <!-- 状态栏 -->
-      <section class="status-bar" aria-live="polite">
-        <div id="loadingState" class="status-pill is-loading">正在加载数据…</div>
-        <div id="dataSummary" class="status-summary"></div>
-      </section>
-
       <!-- 搜索 -->
       <section class="search-panel panel">
         <div class="panel__body">

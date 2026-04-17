@@ -781,17 +781,10 @@ export function renderSummary(filteredPrograms, allPrograms) {
   const filtered = filteredPrograms || [];
   const all = allPrograms || [];
 
-  const loadingState = document.getElementById('loadingState');
-  if (loadingState) {
-    loadingState.textContent = '数据已加载';
-    loadingState.classList.remove('is-loading');
-  }
-
   const schoolCount = new Set(filtered.map((p) => p.university_slug)).size;
   const totalSchoolCount = new Set(all.map((p) => p.university_slug)).size;
 
   setText('resultCount', `${schoolCount} 所大学 / ${filtered.length} 个项目`);
-  setText('dataSummary', `当前显示 ${schoolCount} 所学校 / 共 ${totalSchoolCount} 所，${filtered.length} 个项目`);
 
   renderStatsList(
     'schoolCoverageStats',
