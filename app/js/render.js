@@ -1,8 +1,7 @@
 import { buildFilterOptions } from './filters.js';
 import {
   escapeHtml,
-  textYesNo,
-  downloadTextFile
+  textYesNo
 } from './utils.js';
 
 const expandedUniversitySet = new Set();
@@ -674,7 +673,7 @@ function renderSchoolMainRow(school, rank) {
         <span class="school-name">${escapeHtml(school.display_name)}</span>
       </td>
       <td>${renderProgramLink(program.program, program.url)}</td>
-      <td>${escapeHtml(program.faculty_raw || '')}</td>
+      <td>${escapeHtml((program.faculty_list || []).join(', '))}</td>
       <td>${escapeHtml((program.campus_list || []).join(', '))}</td>
       <td class="location-cell">${renderLocationCell('city', location)}</td>
       <td class="location-cell">${renderLocationCell('country', location)}</td>
@@ -705,7 +704,7 @@ function renderProgramContinuationRows(school) {
           <td></td>
           <td></td>
           <td>${renderProgramLink(program.program, program.url)}</td>
-          <td>${escapeHtml(program.faculty_raw || '')}</td>
+          <td>${escapeHtml((program.faculty_list || []).join(', '))}</td>
           <td>${escapeHtml((program.campus_list || []).join(', '))}</td>
           <td class="location-cell">${renderLocationCell('city', location)}</td>
           <td class="location-cell">${renderLocationCell('country', location)}</td>
@@ -970,69 +969,6 @@ function resetUiState(ui, programs) {
   ui.sortDirection = 'asc';
 }
 
-function exportProgramsToCsv(programs) {
-  const headers = [
-    'program_id',
-    'university_slug',
-    'display_name',
-    'manifest_order',
-    'program',
-    'faculty_raw',
-    'faculty_group',
-    'campus',
-    'city',
-    'country',
-    'region',
-    'duration',
-    'eng_taught',
-    'type',
-    'url',
-    'city_scale',
-    'climate',
-    'language',
-    'residency',
-    'qs',
-    'the',
-    'usnews',
-    'total_score'
-  ];
-
-  const lines = [
-    headers.join(','),
-    ...(programs || []).map((p) => {
-      const row = [
-        p.program_id,
-        p.university_slug,
-        p.display_name,
-        p.manifest_order,
-        p.program,
-        p.faculty_raw,
-        (p.faculty_group_list || []).join('+'),
-        (p.campus_list || []).join('+'),
-        (p.city_list || []).join('+'),
-        (p.country_list || []).join('+'),
-        (p.region_list || []).join('+'),
-        p.duration,
-        p.eng_taught,
-        p.type,
-        p.url,
-        (p.city_scale_list || []).join('+'),
-        (p.climate_list || []).join('+'),
-        (p.language_list || []).join('+'),
-        (p.residency_list || []).join('+'),
-        p.qs,
-        p.the,
-        p.usnews,
-        p.total_score ?? ''
-      ];
-
-      return row.map((value) => `"${String(value ?? '').replaceAll('"', '""')}"`).join(',');
-    })
-  ];
-
-  downloadTextFile('university_guidebook_filtered.csv', lines.join('\n'), 'text/csv;charset=utf-8');
-}
-
 export function bindStaticEvents(state, refresh) {
   const ui = state.ui;
   window.__ug_refresh__ = refresh;
@@ -1050,13 +986,6 @@ export function bindStaticEvents(state, refresh) {
     resetFiltersBtn.addEventListener('click', () => {
       resetUiState(ui, state.normalized);
       refresh();
-    });
-  }
-
-  const exportCsvBtn = document.getElementById('exportCsvBtn');
-  if (exportCsvBtn) {
-    exportCsvBtn.addEventListener('click', () => {
-      exportProgramsToCsv(state.filtered || []);
     });
   }
 
