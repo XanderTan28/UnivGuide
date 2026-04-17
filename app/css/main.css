@@ -745,8 +745,8 @@ body.dark .data-table tbody tr:nth-child(even) {
 .data-table tbody td:nth-child(7),
 .data-table thead th:nth-child(8),
 .data-table tbody td:nth-child(8) {
-  min-width: 84px;
-  max-width: 110px;
+  min-width: 100px;
+  max-width: 160px;
   white-space: normal;
 }
 

@@ -685,6 +685,10 @@ function buildLocationPayload(location) {
   return encodeURIComponent(JSON.stringify(location));
 }
 
+function formatLocationLabel(label) {
+  return escapeHtml(label || '').replace(/, /g, ',<wbr> ');
+}
+
 function renderLocationCell(type, location) {
   const label =
     type === 'city' ? location.city :
@@ -697,7 +701,7 @@ function renderLocationCell(type, location) {
       class="inline-link-btn location-trigger"
       data-location="${buildLocationPayload(location)}"
     >
-      ${escapeHtml(label || '')}
+      ${formatLocationLabel(label)}
     </button>
   `;
 }
