@@ -181,6 +181,25 @@ textarea {
   margin-bottom: 18px;
 }
 
+.filters-panel,
+.sort-panel {
+  overflow: visible;
+}
+
+.filters-panel .panel__body,
+.filters-panel .filter-grid,
+.filters-panel .filter-field,
+.filters-panel .filter-dropdown-host,
+.filters-panel .filter-dropdown,
+.sort-panel .panel__body,
+.sort-panel .sort-bar,
+.sort-panel .sort-bar__right,
+.sort-panel .sort-field,
+.sort-panel .filter-dropdown-host,
+.sort-panel .filter-dropdown {
+  overflow: visible;
+}
+
 .panel__head {
   display: flex;
   justify-content: space-between;
@@ -314,23 +333,102 @@ textarea {
   letter-spacing: 0.03em;
 }
 
-.filter-field select {
+.filter-dropdown-host {
+  position: relative;
+  width: 100%;
+}
+
+.filter-dropdown {
+  position: relative;
+}
+
+.filter-dropdown__button {
   width: 100%;
   min-height: 46px;
-  border: 1px solid var(--line);
+  border: none;
   border-radius: 14px;
-  background: var(--panel);
+  background: var(--panel-2);
   color: var(--text);
+  padding: 10px 38px 10px 12px;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  box-shadow: none;
+}
+
+.filter-dropdown__button::after {
+  content: "▾";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.filter-dropdown.is-open .filter-dropdown__button {
+  background: var(--panel-2);
+}
+
+.filter-dropdown__label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-dropdown__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--panel);
+  border: none;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 8px 0;
+  display: none;
+}
+
+.filter-dropdown.is-open .filter-dropdown__panel {
+  display: block;
+}
+
+.filter-dropdown__list {
+  max-height: 240px;
+  overflow: auto;
+  border: none;
+  border-radius: 12px;
+}
+
+.filter-dropdown__row {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  align-items: center;
   padding: 10px 12px;
-  outline: none;
+  border-bottom: none;
+  cursor: pointer;
 }
 
-.filter-field select[multiple] {
-  min-height: 132px;
+.filter-dropdown__row--select-all {
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 2px;
 }
 
-.filter-field select:focus {
-  border-color: var(--thead);
+.filter-dropdown__row:hover {
+  background: rgba(123, 109, 141, 0.06);
+}
+
+.filter-dropdown__checkbox {
+  margin: 0;
+}
+
+.filter-dropdown__empty {
+  padding: 12px;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .active-tags {
@@ -355,37 +453,29 @@ textarea {
 
 .sort-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: end;
   gap: 16px;
   flex-wrap: wrap;
-}
-
-.sort-bar__left {
-  display: flex;
-  align-items: center;
-  min-height: 46px;
-}
-
-.result-count {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--muted);
-  letter-spacing: 0.03em;
 }
 
 .sort-bar__right {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
-  align-items: end;
+  align-items: flex-start;
 }
 
 .sort-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-width: 180px;
+  width: 220px;
+  min-width: 220px;
+}
+
+.sort-field .filter-dropdown-host {
+  width: 100%;
 }
 
 .sort-field label {
@@ -397,12 +487,31 @@ textarea {
 
 .sort-field select {
   min-height: 46px;
-  border: 1px solid var(--line);
+  border: none;
   border-radius: 14px;
-  background: var(--panel);
+  background: var(--panel-2);
   color: var(--text);
-  padding: 0 12px;
+  padding: 0 38px 0 12px;
   outline: none;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.sort-field select:focus {
+  background-color: var(--panel-2);
+  outline: none;
+  box-shadow: none;
 }
 
 .dashboard-grid {
@@ -857,4 +966,126 @@ tr:has(.location-cell:hover) .location-cell {
   .detail-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.filter-dropdown__row--single {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.filter-dropdown__row--single.is-selected {
+  background: rgba(123, 109, 141, 0.08);
+  font-weight: 700;
+}
+
+.sort-panel .filter-dropdown__button,
+.sort-panel .filter-dropdown__label {
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sort-panel .filter-dropdown__label {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.sort-panel .filter-dropdown__row--single {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.sort-panel .filter-dropdown__row--single span {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.sort-panel__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sort-panel__summary {
+  font-family:
+    "Iowan Old Style",
+    "Palatino Linotype",
+    "Times New Roman",
+    "Songti SC",
+    serif;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.sort-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sort-panel__heading .panel__title {
+  margin: 0;
+  line-height: 1.1;
+}
+
+.sort-panel .panel__head {
+  border-bottom: none;
+  padding-bottom: 18px;
+}
+
+.sort-field--direction {
+  min-width: 160px;
+  width: 160px;
+}
+
+.sort-direction-toggle-host {
+  width: 100%;
+}
+
+.sort-direction-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  width: 100%;
+  background: var(--panel-2);
+  border-radius: 14px;
+  padding: 2px;
+}
+
+.sort-direction-toggle__btn {
+  min-height: 42px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.sort-direction-toggle__btn.is-active {
+  background: var(--thead);
+  color: #fff;
 }

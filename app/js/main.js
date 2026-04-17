@@ -1,12 +1,13 @@
 import { loadAllData } from './data_loader.js';
 import { normalizePrograms } from './data_normalizer.js';
-import { applyFilters } from './filters.js';
+import { applyFilters, buildFilterOptions } from './filters.js';
 import { sortPrograms } from './sort.js';
 import {
   renderFilterOptions,
   renderSummary,
   renderTable,
-  bindStaticEvents
+  bindStaticEvents,
+  bindDynamicFilterEvents
 } from './render.js';
 
 const state = {
@@ -22,7 +23,7 @@ const state = {
     campuses: [],
     faculties: [],
     durations: [],
-    engTaught: 'true',
+    engTaught: [],
     cityScales: [],
     climates: [],
     languages: [],
@@ -39,6 +40,7 @@ function applyCurrentState() {
   state.filtered = sorted;
 
   renderFilterOptions(state.normalized, state.ui);
+  bindDynamicFilterEvents(state, refresh);
   renderSummary(state.filtered, state.normalized);
   renderTable(state.filtered);
 }
@@ -59,6 +61,21 @@ async function bootstrap() {
     const loaded = await loadAllData();
     state.rawLoaded = loaded;
     state.normalized = normalizePrograms(loaded);
+
+    const options = buildFilterOptions(state.normalized);
+
+    state.ui.schools = [...options.schools];
+    state.ui.regions = [...options.regions];
+    state.ui.countries = [...options.countries];
+    state.ui.cities = [...options.cities];
+    state.ui.campuses = [...options.campuses];
+    state.ui.faculties = [...options.faculties];
+    state.ui.durations = [...options.durations];
+    state.ui.cityScales = [...options.cityScales];
+    state.ui.climates = [...options.climates];
+    state.ui.languages = [...options.languages];
+    state.ui.residencies = [...options.residencies];
+    state.ui.engTaught = ['true'];
 
     applyCurrentState();
     bindStaticEvents(state, refresh);

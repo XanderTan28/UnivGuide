@@ -3,13 +3,6 @@ import {
   hasIntersection
 } from './utils.js';
 
-function matchScalar(selectedValue, itemValue) {
-  if (selectedValue == null || selectedValue === '' || selectedValue === 'all') {
-    return true;
-  }
-  return String(itemValue || '') === String(selectedValue);
-}
-
 function matchArray(selectedValues, itemValues) {
   return hasIntersection(itemValues, selectedValues);
 }
@@ -33,7 +26,7 @@ export function applyFilters(programs, ui) {
     if (!matchArray(ui.languages, program.language_list)) return false;
     if (!matchArray(ui.residencies, program.residency_list)) return false;
 
-    if (!matchScalar(ui.engTaught, normalizeEngTaught(program.eng_taught))) {
+    if (!matchArray(ui.engTaught, [normalizeEngTaught(program.eng_taught)])) {
       return false;
     }
 

@@ -64,76 +64,69 @@
             <button id="resetFiltersBtn" class="btn btn--secondary" type="button">
               重置筛选
             </button>
-            <button id="restoreEngOnlyBtn" class="btn btn--primary" type="button">
-              仅查看英授项目
-            </button>
           </div>
         </div>
 
         <div class="panel__body">
           <div class="filter-grid">
             <div class="filter-field">
-              <label for="schoolSelect">大学</label>
-              <select id="schoolSelect" multiple></select>
-            </div>
-
-            <div class="filter-field">
-              <label for="regionSelect">地区</label>
-              <select id="regionSelect" multiple></select>
-            </div>
-
-            <div class="filter-field">
-              <label for="countrySelect">国家</label>
-              <select id="countrySelect" multiple></select>
-            </div>
-
-            <div class="filter-field">
-              <label for="citySelect">城市</label>
-              <select id="citySelect" multiple></select>
-            </div>
-
-            <div class="filter-field">
-              <label for="campusSelect">校区</label>
-              <select id="campusSelect" multiple></select>
-            </div>
-
-            <div class="filter-field">
-              <label for="facultySelect">学院</label>
-              <select id="facultySelect" multiple></select>
-            </div>
-
-            <div class="filter-field">
-              <label for="durationSelect">学制</label>
-              <select id="durationSelect" multiple></select>
-            </div>
-
-            <div class="filter-field">
-              <label for="engTaughtSelect">授课语言</label>
-              <select id="engTaughtSelect">
-                <option value="all">全部</option>
-                <option value="true" selected>仅英授</option>
-                <option value="false">仅非英授</option>
-              </select>
-            </div>
-
-            <div class="filter-field">
               <label for="cityScaleSelect">城市规模</label>
-              <select id="cityScaleSelect" multiple></select>
+              <div id="cityScaleSelect" class="filter-dropdown-host"></div>
             </div>
 
             <div class="filter-field">
               <label for="climateSelect">气候</label>
-              <select id="climateSelect" multiple></select>
+              <div id="climateSelect" class="filter-dropdown-host"></div>
             </div>
 
             <div class="filter-field">
               <label for="languageSelect">语言环境</label>
-              <select id="languageSelect" multiple></select>
+              <div id="languageSelect" class="filter-dropdown-host"></div>
             </div>
 
             <div class="filter-field">
               <label for="residencySelect">居留</label>
-              <select id="residencySelect" multiple></select>
+              <div id="residencySelect" class="filter-dropdown-host"></div>
+            </div>
+
+            <div class="filter-field">
+              <label for="regionSelect">地区</label>
+              <div id="regionSelect" class="filter-dropdown-host"></div>
+            </div>
+
+            <div class="filter-field">
+              <label for="countrySelect">国家</label>
+              <div id="countrySelect" class="filter-dropdown-host"></div>
+            </div>
+
+            <div class="filter-field">
+              <label for="citySelect">城市</label>
+              <div id="citySelect" class="filter-dropdown-host"></div>
+            </div>
+
+            <div class="filter-field">
+              <label for="schoolSelect">大学</label>
+              <div id="schoolSelect" class="filter-dropdown-host"></div>
+            </div>
+
+            <div class="filter-field">
+              <label for="campusSelect">校区</label>
+              <div id="campusSelect" class="filter-dropdown-host"></div>
+            </div>
+
+            <div class="filter-field">
+              <label for="facultySelect">学院</label>
+              <div id="facultySelect" class="filter-dropdown-host"></div>
+            </div>
+
+            <div class="filter-field">
+              <label for="durationSelect">学制</label>
+              <div id="durationSelect" class="filter-dropdown-host"></div>
+            </div>
+
+            <div class="filter-field">
+              <label for="engTaughtSelect">授课语言</label>
+              <div id="engTaughtSelect" class="filter-dropdown-host"></div>
             </div>
           </div>
 
@@ -143,38 +136,21 @@
 
       <!-- 排序 -->
       <section class="sort-panel panel">
-        <div class="panel__body sort-bar">
-          <div class="sort-bar__left">
-            <div id="resultCount" class="result-count">0 所大学 / 0 个项目</div>
+        <div class="panel__head sort-panel__head">
+          <div class="sort-panel__heading">
+            <h2 class="panel__title">排序</h2>
+            <div id="resultCount" class="sort-panel__summary">0 所大学 / 0 个项目</div>
           </div>
 
           <div class="sort-bar__right">
             <div class="sort-field">
               <label for="sortMetricSelect">排序指标</label>
-              <select id="sortMetricSelect">
-                <option value="manifest_order">学校顺序</option>
-                <option value="qs">QS</option>
-                <option value="the">THE</option>
-                <option value="usnews">US News</option>
-                <option value="program">项目名称</option>
-                <option value="faculty">学院</option>
-                <option value="duration">学制</option>
-                <option value="city">城市</option>
-                <option value="country">国家</option>
-                <option value="region">地区</option>
-                <option value="city_scale">城市规模</option>
-                <option value="climate">气候</option>
-                <option value="language">语言环境</option>
-                <option value="residency">居留</option>
-              </select>
+              <div id="sortMetricSelect" class="filter-dropdown-host"></div>
             </div>
 
-            <div class="sort-field">
-              <label for="sortDirectionSelect">方向</label>
-              <select id="sortDirectionSelect">
-                <option value="asc" selected>升序</option>
-                <option value="desc">降序</option>
-              </select>
+            <div class="sort-field sort-field--direction">
+              <label for="sortDirectionToggle">方向</label>
+              <div id="sortDirectionToggle" class="sort-direction-toggle-host"></div>
             </div>
           </div>
         </div>

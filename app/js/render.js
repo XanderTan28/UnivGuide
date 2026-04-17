@@ -12,41 +12,319 @@ function setText(id, value) {
   if (el) el.textContent = value ?? '';
 }
 
-function renderMultiSelect(selectId, values, selectedValues, labelMap = null) {
-  const el = document.getElementById(selectId);
-  if (!el) return;
-
-  const selectedSet = new Set((selectedValues || []).map((v) => String(v)));
-
-  el.innerHTML = (values || [])
-    .map((value) => {
-      const label = labelMap?.[value] || value;
-      const selected = selectedSet.has(String(value)) ? 'selected' : '';
-      return `<option value="${escapeHtml(value)}" ${selected}>${escapeHtml(label)}</option>`;
-    })
-    .join('');
-}
-
-function renderSchoolSelect(selectId, programs, selectedValues) {
-  const el = document.getElementById(selectId);
-  if (!el) return;
-
+function buildSchoolEntries(programs) {
   const map = {};
   (programs || []).forEach((program) => {
     if (!map[program.university_slug]) {
-      map[program.university_slug] = program.display_name || program.university || program.university_slug;
+      map[program.university_slug] =
+        program.display_name || program.university || program.university_slug;
     }
   });
 
-  const entries = Object.entries(map).sort((a, b) => a[1].localeCompare(b[1], 'zh-CN'));
-  const selectedSet = new Set((selectedValues || []).map((v) => String(v)));
+  return Object.entries(map)
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'zh-CN'));
+}
 
-  el.innerHTML = entries
-    .map(([slug, label]) => {
-      const selected = selectedSet.has(String(slug)) ? 'selected' : '';
-      return `<option value="${escapeHtml(slug)}" ${selected}>${escapeHtml(label)}</option>`;
-    })
-    .join('');
+function buildEntries(values, labelMap = null) {
+  return (values || [])
+    .map((value) => ({
+      value,
+      label: labelMap?.[value] || value
+    }))
+    .sort((a, b) => String(a.label).localeCompare(String(b.label), 'zh-CN'));
+}
+
+function summarizeSelected(entries, selectedValues, fallback = '全部') {
+  const normalizedSelected = (selectedValues || []).map((v) => String(v));
+  const selectedSet = new Set(normalizedSelected);
+  const allValues = (entries || []).map((item) => String(item.value));
+  const allSelected =
+    allValues.length > 0 &&
+    allValues.length === normalizedSelected.length &&
+    allValues.every((value) => selectedSet.has(value));
+
+  if (allSelected) return fallback;
+
+  const selectedLabels = (entries || [])
+    .filter((item) => selectedSet.has(String(item.value)))
+    .map((item) => item.label);
+
+  if (selectedLabels.length === 0) return fallback;
+  if (selectedLabels.length <= 3) return selectedLabels.join('、');
+  return `已选 ${selectedLabels.length} 项`;
+}
+
+function renderCheckboxDropdown(hostId, entries, selectedValues, fallback = '全部') {
+  const host = document.getElementById(hostId);
+  if (!host) return;
+
+  const normalizedSelected = (selectedValues || []).map((v) => String(v));
+  const selectedSet = new Set(normalizedSelected);
+  const allValues = (entries || []).map((item) => String(item.value));
+  const allSelected =
+    allValues.length > 0 &&
+    allValues.length === normalizedSelected.length &&
+    allValues.every((value) => selectedSet.has(value));
+
+  const summary = summarizeSelected(entries, selectedValues, fallback);
+
+  host.innerHTML = `
+    <div class="filter-dropdown" data-filter-id="${escapeHtml(hostId)}">
+      <button type="button" class="filter-dropdown__button">
+        <span class="filter-dropdown__label">${escapeHtml(summary)}</span>
+      </button>
+
+      <div class="filter-dropdown__panel">
+        <div class="filter-dropdown__list">
+          <label
+            class="filter-dropdown__row filter-dropdown__row--select-all"
+            data-action="toggle-all"
+          >
+            <input
+              class="filter-dropdown__checkbox filter-dropdown__checkbox--select-all"
+              type="checkbox"
+              ${allSelected ? 'checked' : ''}
+            />
+            <span>全选</span>
+          </label>
+
+          ${
+            entries.length
+              ? entries.map((item) => `
+                <label class="filter-dropdown__row">
+                  <input
+                    class="filter-dropdown__checkbox"
+                    type="checkbox"
+                    value="${escapeHtml(item.value)}"
+                    ${selectedSet.has(String(item.value)) ? 'checked' : ''}
+                  />
+                  <span>${escapeHtml(item.label)}</span>
+                </label>
+              `).join('')
+              : `<div class="filter-dropdown__empty">暂无可选项</div>`
+          }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSingleSelectDropdown(hostId, entries, selectedValue, fallback = '请选择') {
+  const host = document.getElementById(hostId);
+  if (!host) return;
+
+  const normalizedSelected = String(selectedValue || '');
+  const selectedEntry =
+    (entries || []).find((item) => String(item.value) === normalizedSelected) || null;
+
+  const summary = selectedEntry?.label || fallback;
+
+  host.innerHTML = `
+    <div class="filter-dropdown" data-filter-id="${escapeHtml(hostId)}">
+      <button type="button" class="filter-dropdown__button">
+        <span class="filter-dropdown__label">${escapeHtml(summary)}</span>
+      </button>
+
+      <div class="filter-dropdown__panel">
+        <div class="filter-dropdown__list">
+          ${
+            entries.length
+              ? entries.map((item) => `
+                <button
+                  type="button"
+                  class="filter-dropdown__row filter-dropdown__row--single ${String(item.value) === normalizedSelected ? 'is-selected' : ''}"
+                  data-single-value="${escapeHtml(item.value)}"
+                >
+                  <span>${escapeHtml(item.label)}</span>
+                </button>
+              `).join('')
+              : `<div class="filter-dropdown__empty">暂无可选项</div>`
+          }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSortDirectionToggle(hostId, selectedValue = 'asc') {
+  const host = document.getElementById(hostId);
+  if (!host) return;
+
+  const current = selectedValue === 'desc' ? 'desc' : 'asc';
+
+  host.innerHTML = `
+    <div class="sort-direction-toggle" role="group" aria-label="排序方向">
+      <button
+        type="button"
+        class="sort-direction-toggle__btn ${current === 'asc' ? 'is-active' : ''}"
+        data-sort-direction="asc"
+      >
+        升序
+      </button>
+      <button
+        type="button"
+        class="sort-direction-toggle__btn ${current === 'desc' ? 'is-active' : ''}"
+        data-sort-direction="desc"
+      >
+        降序
+      </button>
+    </div>
+  `;
+}
+
+function readCheckboxDropdownValues(hostId) {
+  const host = document.getElementById(hostId);
+  if (!host) return [];
+
+  return [
+    ...host.querySelectorAll('.filter-dropdown__checkbox:checked:not(.filter-dropdown__checkbox--select-all)')
+  ].map((input) => input.value);
+}
+
+function bindDropdownInteractions(hostId, ui, uiKey, refresh) {
+  const host = document.getElementById(hostId);
+  if (!host) return;
+
+  const dropdown = host.querySelector('.filter-dropdown');
+  const button = host.querySelector('.filter-dropdown__button');
+  const panel = host.querySelector('.filter-dropdown__panel');
+
+  if (!dropdown || !button || !panel) return;
+
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    document.querySelectorAll('.filter-dropdown.is-open').forEach((el) => {
+      if (el !== dropdown) el.classList.remove('is-open');
+    });
+
+    dropdown.classList.toggle('is-open');
+  });
+
+  panel.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    const selectAllRow = e.target.closest('[data-action="toggle-all"]');
+    if (selectAllRow) {
+      const selectAllCheckbox = host.querySelector('.filter-dropdown__checkbox--select-all');
+      const itemCheckboxes = [
+        ...host.querySelectorAll('.filter-dropdown__checkbox:not(.filter-dropdown__checkbox--select-all)')
+      ];
+
+      const shouldSelectAll = !selectAllCheckbox.checked;
+
+      selectAllCheckbox.checked = shouldSelectAll;
+      itemCheckboxes.forEach((input) => {
+        input.checked = shouldSelectAll;
+      });
+
+      ui[uiKey] = shouldSelectAll
+        ? itemCheckboxes.map((input) => input.value)
+        : [];
+
+      refresh();
+      return;
+    }
+
+    if (e.target.classList.contains('filter-dropdown__checkbox')) {
+      if (e.target.classList.contains('filter-dropdown__checkbox--select-all')) {
+        return;
+      }
+
+      ui[uiKey] = readCheckboxDropdownValues(hostId);
+
+      const selectAllCheckbox = host.querySelector('.filter-dropdown__checkbox--select-all');
+      const itemCheckboxes = [
+        ...host.querySelectorAll('.filter-dropdown__checkbox:not(.filter-dropdown__checkbox--select-all)')
+      ];
+
+      const allChecked =
+        itemCheckboxes.length > 0 &&
+        itemCheckboxes.every((input) => input.checked);
+
+      if (selectAllCheckbox) {
+        selectAllCheckbox.checked = allChecked;
+      }
+
+      refresh();
+    }
+  });
+}
+
+function bindSingleSelectDropdown(hostId, ui, uiKey, refresh) {
+  const host = document.getElementById(hostId);
+  if (!host) return;
+
+  const dropdown = host.querySelector('.filter-dropdown');
+  const button = host.querySelector('.filter-dropdown__button');
+  const panel = host.querySelector('.filter-dropdown__panel');
+
+  if (!dropdown || !button || !panel) return;
+
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    document.querySelectorAll('.filter-dropdown.is-open').forEach((el) => {
+      if (el !== dropdown) el.classList.remove('is-open');
+    });
+
+    dropdown.classList.toggle('is-open');
+  });
+
+  panel.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    const row = e.target.closest('[data-single-value]');
+    if (!row) return;
+
+    ui[uiKey] = row.dataset.singleValue || '';
+    refresh();
+  });
+}
+
+function bindSortDirectionToggle(hostId, ui, refresh) {
+  const host = document.getElementById(hostId);
+  if (!host) return;
+
+  host.querySelectorAll('[data-sort-direction]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+
+      const value = btn.dataset.sortDirection;
+      if (!value) return;
+
+      ui.sortDirection = value;
+      refresh();
+    });
+  });
+}
+
+function isSameSelection(selectedValues, defaultValues) {
+  const selected = [...new Set((selectedValues || []).map((v) => String(v)))].sort();
+  const defaults = [...new Set((defaultValues || []).map((v) => String(v)))].sort();
+
+  if (selected.length !== defaults.length) return false;
+  return selected.every((value, index) => value === defaults[index]);
+}
+
+function getDefaultFilterState(programs) {
+  const options = buildFilterOptions(programs);
+
+  return {
+    schools: [...options.schools],
+    regions: [...options.regions],
+    countries: [...options.countries],
+    cities: [...options.cities],
+    campuses: [...options.campuses],
+    faculties: [...options.faculties],
+    durations: [...options.durations],
+    cityScales: [...options.cityScales],
+    climates: [...options.climates],
+    languages: [...options.languages],
+    residencies: [...options.residencies],
+    engTaught: ['true']
+  };
 }
 
 function renderActiveTags(ui, programs) {
@@ -56,27 +334,69 @@ function renderActiveTags(ui, programs) {
   const schoolMap = {};
   (programs || []).forEach((program) => {
     if (!schoolMap[program.university_slug]) {
-      schoolMap[program.university_slug] = program.display_name || program.university || program.university_slug;
+      schoolMap[program.university_slug] =
+        program.display_name || program.university || program.university_slug;
     }
   });
 
+  const defaults = getDefaultFilterState(programs);
   const tags = [];
 
   if (ui.search) tags.push(`搜索：${ui.search}`);
-  if (ui.engTaught === 'true') tags.push('授课：仅英授');
-  if (ui.engTaught === 'false') tags.push('授课：仅非英授');
 
-  (ui.schools || []).forEach((v) => tags.push(`大学：${schoolMap[v] || v}`));
-  (ui.regions || []).forEach((v) => tags.push(`地区：${v}`));
-  (ui.countries || []).forEach((v) => tags.push(`国家：${v}`));
-  (ui.cities || []).forEach((v) => tags.push(`城市：${v}`));
-  (ui.campuses || []).forEach((v) => tags.push(`校区：${v}`));
-  (ui.faculties || []).forEach((v) => tags.push(`学院：${v}`));
-  (ui.durations || []).forEach((v) => tags.push(`学制：${v}`));
-  (ui.cityScales || []).forEach((v) => tags.push(`城市规模：${v}`));
-  (ui.climates || []).forEach((v) => tags.push(`气候：${v}`));
-  (ui.languages || []).forEach((v) => tags.push(`语言：${v}`));
-  (ui.residencies || []).forEach((v) => tags.push(`居留：${v}`));
+  if (!isSameSelection(ui.engTaught, defaults.engTaught)) {
+    (ui.engTaught || []).forEach((v) => {
+      const label =
+        v === 'true' ? '英授' :
+        v === 'false' ? '非英授' :
+        '未知';
+      tags.push(`授课语言：${label}`);
+    });
+  }
+
+  if (!isSameSelection(ui.schools, defaults.schools)) {
+    (ui.schools || []).forEach((v) => tags.push(`大学：${schoolMap[v] || v}`));
+  }
+
+  if (!isSameSelection(ui.regions, defaults.regions)) {
+    (ui.regions || []).forEach((v) => tags.push(`地区：${v}`));
+  }
+
+  if (!isSameSelection(ui.countries, defaults.countries)) {
+    (ui.countries || []).forEach((v) => tags.push(`国家：${v}`));
+  }
+
+  if (!isSameSelection(ui.cities, defaults.cities)) {
+    (ui.cities || []).forEach((v) => tags.push(`城市：${v}`));
+  }
+
+  if (!isSameSelection(ui.campuses, defaults.campuses)) {
+    (ui.campuses || []).forEach((v) => tags.push(`校区：${v}`));
+  }
+
+  if (!isSameSelection(ui.faculties, defaults.faculties)) {
+    (ui.faculties || []).forEach((v) => tags.push(`学院：${v}`));
+  }
+
+  if (!isSameSelection(ui.durations, defaults.durations)) {
+    (ui.durations || []).forEach((v) => tags.push(`学制：${v}`));
+  }
+
+  if (!isSameSelection(ui.cityScales, defaults.cityScales)) {
+    (ui.cityScales || []).forEach((v) => tags.push(`城市规模：${v}`));
+  }
+
+  if (!isSameSelection(ui.climates, defaults.climates)) {
+    (ui.climates || []).forEach((v) => tags.push(`气候：${v}`));
+  }
+
+  if (!isSameSelection(ui.languages, defaults.languages)) {
+    (ui.languages || []).forEach((v) => tags.push(`语言环境：${v}`));
+  }
+
+  if (!isSameSelection(ui.residencies, defaults.residencies)) {
+    (ui.residencies || []).forEach((v) => tags.push(`居留：${v}`));
+  }
 
   container.innerHTML = tags
     .map((tag) => `<span class="filter-tag">${escapeHtml(tag)}</span>`)
@@ -305,26 +625,106 @@ function renderProgramContinuationRows(school) {
 export function renderFilterOptions(programs, ui) {
   const options = buildFilterOptions(programs);
 
-  renderSchoolSelect('schoolSelect', programs, ui.schools);
-  renderMultiSelect('regionSelect', options.regions, ui.regions);
-  renderMultiSelect('countrySelect', options.countries, ui.countries);
-  renderMultiSelect('citySelect', options.cities, ui.cities);
-  renderMultiSelect('campusSelect', options.campuses, ui.campuses);
-  renderMultiSelect('facultySelect', options.faculties, ui.faculties);
-  renderMultiSelect('durationSelect', options.durations, ui.durations);
-  renderMultiSelect('cityScaleSelect', options.cityScales, ui.cityScales);
-  renderMultiSelect('climateSelect', options.climates, ui.climates);
-  renderMultiSelect('languageSelect', options.languages, ui.languages);
-  renderMultiSelect('residencySelect', options.residencies, ui.residencies);
+  renderCheckboxDropdown(
+    'cityScaleSelect',
+    buildEntries(options.cityScales),
+    ui.cityScales
+  );
 
-  const engTaughtSelect = document.getElementById('engTaughtSelect');
-  if (engTaughtSelect) engTaughtSelect.value = ui.engTaught || 'all';
+  renderCheckboxDropdown(
+    'climateSelect',
+    buildEntries(options.climates),
+    ui.climates
+  );
 
-  const sortMetricSelect = document.getElementById('sortMetricSelect');
-  if (sortMetricSelect) sortMetricSelect.value = ui.sortMetric || 'manifest_order';
+  renderCheckboxDropdown(
+    'languageSelect',
+    buildEntries(options.languages),
+    ui.languages
+  );
 
-  const sortDirectionSelect = document.getElementById('sortDirectionSelect');
-  if (sortDirectionSelect) sortDirectionSelect.value = ui.sortDirection || 'asc';
+  renderCheckboxDropdown(
+    'residencySelect',
+    buildEntries(options.residencies),
+    ui.residencies
+  );
+
+  renderCheckboxDropdown(
+    'regionSelect',
+    buildEntries(options.regions),
+    ui.regions
+  );
+
+  renderCheckboxDropdown(
+    'countrySelect',
+    buildEntries(options.countries),
+    ui.countries
+  );
+
+  renderCheckboxDropdown(
+    'citySelect',
+    buildEntries(options.cities),
+    ui.cities
+  );
+
+  renderCheckboxDropdown(
+    'schoolSelect',
+    buildSchoolEntries(programs),
+    ui.schools
+  );
+
+  renderCheckboxDropdown(
+    'campusSelect',
+    buildEntries(options.campuses),
+    ui.campuses
+  );
+
+  renderCheckboxDropdown(
+    'facultySelect',
+    buildEntries(options.faculties),
+    ui.faculties
+  );
+
+  renderCheckboxDropdown(
+    'durationSelect',
+    buildEntries(options.durations),
+    ui.durations
+  );
+
+  renderCheckboxDropdown(
+    'engTaughtSelect',
+    [
+      { value: 'true', label: '英授' },
+      { value: 'false', label: '非英授' },
+      { value: 'unknown', label: '未知' }
+    ],
+    ui.engTaught,
+    '英授'
+  );
+
+  renderSingleSelectDropdown(
+    'sortMetricSelect',
+    [
+      { value: 'manifest_order', label: '排位' },
+      { value: 'qs', label: 'QS' },
+      { value: 'the', label: 'THE' },
+      { value: 'usnews', label: 'US News' },
+      { value: 'program', label: '项目名称' },
+      { value: 'faculty', label: '学院' },
+      { value: 'duration', label: '学制' },
+      { value: 'city', label: '城市' },
+      { value: 'country', label: '国家' },
+      { value: 'region', label: '地区' },
+      { value: 'city_scale', label: '城市规模' },
+      { value: 'climate', label: '气候' },
+      { value: 'language', label: '语言环境' },
+      { value: 'residency', label: '居留' }
+    ],
+    ui.sortMetric,
+    '排位'
+  );
+
+  renderSortDirectionToggle('sortDirectionToggle', ui.sortDirection);
 
   const searchInput = document.getElementById('searchInput');
   if (searchInput && searchInput.value !== (ui.search || '')) {
@@ -413,26 +813,25 @@ export function renderTable(programs) {
   bindLocationTriggers();
 }
 
-function readMultiSelectValues(selectId) {
-  const el = document.getElementById(selectId);
-  if (!el) return [];
-  return [...el.selectedOptions].map((option) => option.value);
-}
+function resetUiState(ui, programs) {
+  const options = buildFilterOptions(programs);
 
-function resetUiState(ui) {
   ui.search = '';
-  ui.schools = [];
-  ui.regions = [];
-  ui.countries = [];
-  ui.cities = [];
-  ui.campuses = [];
-  ui.faculties = [];
-  ui.durations = [];
-  ui.engTaught = 'true';
-  ui.cityScales = [];
-  ui.climates = [];
-  ui.languages = [];
-  ui.residencies = [];
+
+  ui.schools = [...options.schools];
+  ui.regions = [...options.regions];
+  ui.countries = [...options.countries];
+  ui.cities = [...options.cities];
+  ui.campuses = [...options.campuses];
+  ui.faculties = [...options.faculties];
+  ui.durations = [...options.durations];
+  ui.cityScales = [...options.cityScales];
+  ui.climates = [...options.climates];
+  ui.languages = [...options.languages];
+  ui.residencies = [...options.residencies];
+
+  ui.engTaught = ['true'];
+
   ui.sortMetric = 'manifest_order';
   ui.sortDirection = 'asc';
 }
@@ -511,66 +910,10 @@ export function bindStaticEvents(state, refresh) {
     });
   }
 
-  const bindings = [
-    ['schoolSelect', 'schools'],
-    ['regionSelect', 'regions'],
-    ['countrySelect', 'countries'],
-    ['citySelect', 'cities'],
-    ['campusSelect', 'campuses'],
-    ['facultySelect', 'faculties'],
-    ['durationSelect', 'durations'],
-    ['cityScaleSelect', 'cityScales'],
-    ['climateSelect', 'climates'],
-    ['languageSelect', 'languages'],
-    ['residencySelect', 'residencies']
-  ];
-
-  bindings.forEach(([selectId, uiKey]) => {
-    const el = document.getElementById(selectId);
-    if (!el) return;
-
-    el.addEventListener('change', () => {
-      ui[uiKey] = readMultiSelectValues(selectId);
-      refresh();
-    });
-  });
-
-  const engTaughtSelect = document.getElementById('engTaughtSelect');
-  if (engTaughtSelect) {
-    engTaughtSelect.addEventListener('change', () => {
-      ui.engTaught = engTaughtSelect.value;
-      refresh();
-    });
-  }
-
-  const sortMetricSelect = document.getElementById('sortMetricSelect');
-  if (sortMetricSelect) {
-    sortMetricSelect.addEventListener('change', () => {
-      ui.sortMetric = sortMetricSelect.value;
-      refresh();
-    });
-  }
-
-  const sortDirectionSelect = document.getElementById('sortDirectionSelect');
-  if (sortDirectionSelect) {
-    sortDirectionSelect.addEventListener('change', () => {
-      ui.sortDirection = sortDirectionSelect.value;
-      refresh();
-    });
-  }
-
   const resetFiltersBtn = document.getElementById('resetFiltersBtn');
   if (resetFiltersBtn) {
     resetFiltersBtn.addEventListener('click', () => {
-      resetUiState(ui);
-      refresh();
-    });
-  }
-
-  const restoreEngOnlyBtn = document.getElementById('restoreEngOnlyBtn');
-  if (restoreEngOnlyBtn) {
-    restoreEngOnlyBtn.addEventListener('click', () => {
-      ui.engTaught = 'true';
+      resetUiState(ui, state.normalized);
       refresh();
     });
   }
@@ -605,10 +948,40 @@ export function bindStaticEvents(state, refresh) {
     });
   }
 
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.filter-dropdown.is-open').forEach((el) => {
+      el.classList.remove('is-open');
+    });
+  });
+
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', () => {
       document.body.classList.toggle('dark');
     });
   }
+}
+
+export function bindDynamicFilterEvents(state, refresh) {
+  const ui = state.ui;
+
+  [
+    ['cityScaleSelect', 'cityScales'],
+    ['climateSelect', 'climates'],
+    ['languageSelect', 'languages'],
+    ['residencySelect', 'residencies'],
+    ['regionSelect', 'regions'],
+    ['countrySelect', 'countries'],
+    ['citySelect', 'cities'],
+    ['schoolSelect', 'schools'],
+    ['campusSelect', 'campuses'],
+    ['facultySelect', 'faculties'],
+    ['durationSelect', 'durations'],
+    ['engTaughtSelect', 'engTaught']
+  ].forEach(([hostId, uiKey]) => {
+    bindDropdownInteractions(hostId, ui, uiKey, refresh);
+  });
+
+  bindSingleSelectDropdown('sortMetricSelect', ui, 'sortMetric', refresh);
+  bindSortDirectionToggle('sortDirectionToggle', ui, refresh);
 }
