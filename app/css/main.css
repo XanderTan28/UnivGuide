@@ -314,6 +314,22 @@ textarea {
 
 .search-box {
   display: block;
+  position: relative;
+}
+
+.search-box::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 9px;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+  opacity: 0.85;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a817c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><line x1='16.65' y1='16.65' x2='21' y2='21'/></svg>");
 }
 
 .search-panel .panel__body {
@@ -335,7 +351,7 @@ textarea {
   border-radius: 0;
   background: transparent;
   color: var(--text);
-  padding: 0 0 10px 20px;
+  padding: 0 28px 10px 20px;
   outline: none;
 }
 
