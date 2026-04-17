@@ -226,56 +226,54 @@
 
   <!-- 地区信息弹窗 -->
   <dialog id="locationDetailDialog" class="detail-dialog">
-    <div class="detail-dialog__header">
-      <div>
-        <h3 id="locationDetailTitle" class="detail-dialog__title">地区信息</h3>
-        <p id="locationDetailSubtitle" class="detail-dialog__subtitle"></p>
-      </div>
-      <button
-        id="closeLocationDetailBtn"
-        class="icon-btn"
-        type="button"
-        aria-label="关闭"
-        title="关闭"
-      >
-        ×
-      </button>
-    </div>
+    <div class="detail-dialog__shell">
+      <div class="detail-dialog__header">
+        <div class="detail-dialog__heading">
+          <div class="detail-dialog__eyebrow">地区信息</div>
+          <h3 id="locationDetailTitle" class="detail-dialog__title">地区信息</h3>
+          <p id="locationDetailSubtitle" class="detail-dialog__subtitle"></p>
+        </div>
 
-    <div class="detail-dialog__body">
-      <section class="detail-card">
-        <h4>城市信息</h4>
-        <dl class="detail-grid">
-          <div>
-            <dt>城市</dt>
-            <dd id="locCity"></dd>
+        <button
+          id="closeLocationDetailBtn"
+          class="detail-dialog__close"
+          type="button"
+          aria-label="关闭"
+          title="关闭"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="detail-dialog__body">
+        <section class="detail-section">
+          <div class="detail-section__head">
+            <h4 class="detail-section__title">环境与适配</h4>
           </div>
-          <div>
-            <dt>国家</dt>
-            <dd id="locCountry"></dd>
-          </div>
-          <div>
-            <dt>地区</dt>
-            <dd id="locRegion"></dd>
-          </div>
-          <div>
-            <dt>城市规模</dt>
-            <dd id="locCityScale"></dd>
-          </div>
-          <div>
-            <dt>气候</dt>
-            <dd id="locClimate"></dd>
-          </div>
-          <div>
-            <dt>语言环境</dt>
-            <dd id="locLanguage"></dd>
-          </div>
-          <div>
-            <dt>居留</dt>
-            <dd id="locResidency"></dd>
-          </div>
-        </dl>
-      </section>
+
+          <dl class="detail-meta-grid">
+            <div class="detail-meta-item">
+              <dt>城市规模</dt>
+              <dd id="locCityScale"></dd>
+            </div>
+
+            <div class="detail-meta-item">
+              <dt>气候</dt>
+              <dd id="locClimate"></dd>
+            </div>
+
+            <div class="detail-meta-item">
+              <dt>语言环境</dt>
+              <dd id="locLanguage"></dd>
+            </div>
+
+            <div class="detail-meta-item">
+              <dt>居留</dt>
+              <dd id="locResidency"></dd>
+            </div>
+          </dl>
+        </section>
+      </div>
     </div>
   </dialog>
 
