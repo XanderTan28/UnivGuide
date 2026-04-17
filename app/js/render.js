@@ -124,19 +124,24 @@ function countBy(list, getKey) {
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'zh-CN'));
 }
 
-function getSchoolMainLocation(programs) {
-  const mainCampusProgram =
-    programs.find((p) => (p.campus_list || []).includes('Main Campus')) ||
-    programs[0];
+function getRepresentativeProgram(programs) {
+  return (
+    (programs || []).find((p) => (p.campus_list || [])[0] === 'Main Campus') ||
+    (programs || []).find((p) => (p.campus_list || []).includes('Main Campus')) ||
+    (programs || [])[0] ||
+    null
+  );
+}
 
+function buildProgramLocation(program) {
   return {
-    city: (mainCampusProgram?.city_list || [])[0] || '',
-    country: (mainCampusProgram?.country_list || [])[0] || '',
-    region: (mainCampusProgram?.region_list || [])[0] || '',
-    cityScale: (mainCampusProgram?.city_scale_list || [])[0] || '',
-    climate: (mainCampusProgram?.climate_list || [])[0] || '',
-    language: (mainCampusProgram?.language_list || [])[0] || '',
-    residency: (mainCampusProgram?.residency_list || [])[0] || ''
+    city: (program?.city_list || [])[0] || '',
+    country: (program?.country_list || [])[0] || '',
+    region: (program?.region_list || [])[0] || '',
+    cityScale: (program?.city_scale_list || [])[0] || '',
+    climate: (program?.climate_list || [])[0] || '',
+    language: (program?.language_list || [])[0] || '',
+    residency: (program?.residency_list || [])[0] || ''
   };
 }
 
@@ -151,21 +156,24 @@ function groupProgramsByUniversity(programs) {
     map.get(slug).push(program);
   });
 
-  return [...map.entries()].map(([slug, items]) => {
-    const first = items[0];
-    const location = getSchoolMainLocation(items);
+  return [...map.entries()]
+    .map(([slug, items]) => {
+      const first = items[0];
+      const representativeProgram = getRepresentativeProgram(items);
 
-    return {
-      university_slug: slug,
-      display_name: first.display_name || first.university || slug,
-      manifest_order: first.manifest_order,
-      qs: first.qs,
-      the: first.the,
-      usnews: first.usnews,
-      location,
-      programs: items
-    };
-  }).sort((a, b) => a.manifest_order - b.manifest_order);
+      return {
+        university_slug: slug,
+        display_name: first.display_name || first.university || slug,
+        manifest_order: first.manifest_order,
+        qs: first.qs,
+        the: first.the,
+        usnews: first.usnews,
+        total_score: first.total_score ?? '',
+        representativeProgram,
+        programs: items
+      };
+    })
+    .sort((a, b) => a.manifest_order - b.manifest_order);
 }
 
 function buildLocationPayload(location) {
@@ -223,16 +231,78 @@ function openLocationDialog(location) {
   }
 }
 
-function buildProgramLocation(program) {
-  return {
-    city: (program.city_list || [])[0] || '',
-    country: (program.country_list || [])[0] || '',
-    region: (program.region_list || [])[0] || '',
-    cityScale: (program.city_scale_list || [])[0] || '',
-    climate: (program.climate_list || [])[0] || '',
-    language: (program.language_list || [])[0] || '',
-    residency: (program.residency_list || [])[0] || ''
-  };
+function renderProgramLink(programName, url) {
+  if (!programName) return '';
+
+  return url
+    ? `<a class="program-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(programName)}</a>`
+    : escapeHtml(programName);
+}
+
+function renderSchoolMainRow(school, rank) {
+  const program = school.representativeProgram || {};
+  const location = buildProgramLocation(program);
+  const expanded = expandedUniversitySet.has(school.university_slug);
+  const arrow = expanded ? '▾' : '▸';
+
+  return `
+    <tr
+      class="school-row"
+      data-university-slug="${escapeHtml(school.university_slug)}"
+    >
+      <td>${rank}</td>
+      <td class="school-name-cell">
+        <span class="fold-arrow">${arrow}</span>
+        <span class="school-name">${escapeHtml(school.display_name)}</span>
+      </td>
+      <td>${renderProgramLink(program.program, program.url)}</td>
+      <td>${escapeHtml(program.faculty || '')}</td>
+      <td>${escapeHtml((program.campus_list || []).join(' + '))}</td>
+      <td>${renderLocationCell('city', location)}</td>
+      <td>${renderLocationCell('country', location)}</td>
+      <td>${renderLocationCell('region', location)}</td>
+      <td>${escapeHtml(program.duration || '')}</td>
+      <td>${escapeHtml(textYesNo(program.eng_taught || ''))}</td>
+      <td>${escapeHtml(program.type || '')}</td>
+      <td>${escapeHtml(school.qs ?? '')}</td>
+      <td>${escapeHtml(school.the ?? '')}</td>
+      <td>${escapeHtml(school.usnews ?? '')}</td>
+      <td>${escapeHtml(school.total_score ?? '')}</td>
+    </tr>
+  `;
+}
+
+function renderProgramContinuationRows(school) {
+  if (!expandedUniversitySet.has(school.university_slug)) return '';
+
+  const representativeProgramId = school.representativeProgram?.program_id || '';
+
+  return (school.programs || [])
+    .filter((program) => program.program_id !== representativeProgramId)
+    .map((program) => {
+      const location = buildProgramLocation(program);
+
+      return `
+        <tr class="program-row program-row--continuation">
+          <td></td>
+          <td></td>
+          <td>${renderProgramLink(program.program, program.url)}</td>
+          <td>${escapeHtml(program.faculty || '')}</td>
+          <td>${escapeHtml((program.campus_list || []).join(' + '))}</td>
+          <td>${renderLocationCell('city', location)}</td>
+          <td>${renderLocationCell('country', location)}</td>
+          <td>${renderLocationCell('region', location)}</td>
+          <td>${escapeHtml(program.duration || '')}</td>
+          <td>${escapeHtml(textYesNo(program.eng_taught || ''))}</td>
+          <td>${escapeHtml(program.type || '')}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      `;
+    })
+    .join('');
 }
 
 export function renderFilterOptions(programs, ui) {
@@ -313,88 +383,20 @@ export function renderTable(programs) {
   if (!schools.length) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="8" class="table-empty">没有匹配结果</td>
+        <td colspan="15" class="table-empty">没有匹配结果</td>
       </tr>
     `;
     return;
   }
 
-  tbody.innerHTML = schools.map((school, index) => {
-    const expanded = expandedUniversitySet.has(school.university_slug);
-    const arrow = expanded ? '▾' : '▸';
-
-    const schoolRow = `
-      <tr
-        class="school-row"
-        data-university-slug="${escapeHtml(school.university_slug)}"
-      >
-        <td>${index + 1}</td>
-        <td class="school-name-cell">
-          <span class="fold-arrow">${arrow}</span>
-          <span class="school-name">${escapeHtml(school.display_name)}</span>
-        </td>
-        <td>${renderLocationCell('city', school.location)}</td>
-        <td>${renderLocationCell('country', school.location)}</td>
-        <td>${renderLocationCell('region', school.location)}</td>
-        <td>${escapeHtml(school.qs ?? '')}</td>
-        <td>${escapeHtml(school.the ?? '')}</td>
-        <td>${escapeHtml(school.usnews ?? '')}</td>
-      </tr>
-    `;
-
-    const projectRows = expanded
-      ? `
-        <tr class="school-projects-row">
-          <td colspan="8" class="school-projects-cell">
-            <div class="nested-table-wrap">
-              <table class="nested-table">
-                <thead>
-                  <tr>
-                    <th>项目</th>
-                    <th>学院</th>
-                    <th>校区</th>
-                    <th>城市</th>
-                    <th>国家</th>
-                    <th>地区</th>
-                    <th>学制</th>
-                    <th>英授</th>
-                    <th>类型</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${school.programs.map((program) => {
-                    const location = buildProgramLocation(program);
-
-                    return `
-                      <tr class="program-sub-row">
-                        <td>
-                          ${
-                            program.url
-                              ? `<a class="program-link" href="${escapeHtml(program.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(program.program)}</a>`
-                              : escapeHtml(program.program)
-                          }
-                        </td>
-                        <td>${escapeHtml(program.faculty)}</td>
-                        <td>${escapeHtml((program.campus_list || []).join(' + '))}</td>
-                        <td>${renderLocationCell('city', location)}</td>
-                        <td>${renderLocationCell('country', location)}</td>
-                        <td>${renderLocationCell('region', location)}</td>
-                        <td>${escapeHtml(program.duration)}</td>
-                        <td>${escapeHtml(textYesNo(program.eng_taught))}</td>
-                        <td>${escapeHtml(program.type)}</td>
-                      </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
-            </div>
-          </td>
-        </tr>
-      `
-      : '';
-
-    return schoolRow + projectRows;
-  }).join('');
+  tbody.innerHTML = schools
+    .map((school, index) => {
+      return (
+        renderSchoolMainRow(school, index + 1) +
+        renderProgramContinuationRows(school)
+      );
+    })
+    .join('');
 
   tbody.querySelectorAll('.school-row').forEach((row) => {
     row.addEventListener('click', () => {
@@ -461,7 +463,8 @@ function exportProgramsToCsv(programs) {
     'residency',
     'qs',
     'the',
-    'usnews'
+    'usnews',
+    'total_score'
   ];
 
   const lines = [
@@ -489,7 +492,8 @@ function exportProgramsToCsv(programs) {
         (p.residency_list || []).join('+'),
         p.qs,
         p.the,
-        p.usnews
+        p.usnews,
+        p.total_score ?? ''
       ];
 
       return row.map((value) => `"${String(value ?? '').replaceAll('"', '""')}"`).join(',');

@@ -463,7 +463,7 @@ textarea {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 1200px;
+  min-width: 1900px;
 }
 
 .data-table thead th {
@@ -510,6 +510,76 @@ body.dark .data-table tbody tr:nth-child(even) {
   text-align: center;
   color: var(--muted);
   padding: 24px 12px !important;
+}
+
+.school-row {
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+
+.school-row:hover {
+  background: rgba(123, 109, 141, 0.06);
+}
+
+.school-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  min-width: 180px;
+}
+
+.fold-arrow {
+  display: inline-block;
+  width: 14px;
+  color: var(--muted);
+  font-size: 13px;
+  flex: 0 0 auto;
+}
+
+.school-name {
+  line-height: 1.35;
+}
+
+.program-row--continuation td {
+  background: transparent;
+}
+
+.program-row--continuation td:nth-child(1),
+.program-row--continuation td:nth-child(2),
+.program-row--continuation td:nth-child(12),
+.program-row--continuation td:nth-child(13),
+.program-row--continuation td:nth-child(14),
+.program-row--continuation td:nth-child(15) {
+  color: transparent;
+}
+
+.program-link {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.program-link:hover {
+  text-decoration: underline;
+}
+
+.inline-link-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  color: var(--thead);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+}
+
+.inline-link-btn:hover {
+  text-decoration: underline;
 }
 
 .detail-dialog {
@@ -618,6 +688,74 @@ body.dark .data-table tbody tr:nth-child(even) {
   text-decoration: underline;
 }
 
+.data-table thead th:nth-child(1),
+.data-table tbody td:nth-child(1) {
+  min-width: 64px;
+  white-space: nowrap;
+}
+
+.data-table thead th:nth-child(2),
+.data-table tbody td:nth-child(2) {
+  min-width: 180px;
+}
+
+.data-table thead th:nth-child(3),
+.data-table tbody td:nth-child(3) {
+  min-width: 280px;
+}
+
+.data-table thead th:nth-child(4),
+.data-table tbody td:nth-child(4) {
+  min-width: 180px;
+}
+
+.data-table thead th:nth-child(5),
+.data-table tbody td:nth-child(5) {
+  min-width: 170px;
+}
+
+.data-table thead th:nth-child(6),
+.data-table tbody td:nth-child(6),
+.data-table thead th:nth-child(7),
+.data-table tbody td:nth-child(7),
+.data-table thead th:nth-child(8),
+.data-table tbody td:nth-child(8) {
+  min-width: 120px;
+}
+
+.data-table thead th:nth-child(9),
+.data-table tbody td:nth-child(9),
+.data-table thead th:nth-child(10),
+.data-table tbody td:nth-child(10),
+.data-table thead th:nth-child(11),
+.data-table tbody td:nth-child(11) {
+  min-width: 90px;
+}
+
+.data-table thead th:nth-child(12),
+.data-table tbody td:nth-child(12),
+.data-table thead th:nth-child(13),
+.data-table tbody td:nth-child(13),
+.data-table thead th:nth-child(14),
+.data-table tbody td:nth-child(14),
+.data-table thead th:nth-child(15),
+.data-table tbody td:nth-child(15) {
+  min-width: 88px;
+  white-space: nowrap;
+}
+
+.program-row--continuation td {
+  border-top: 0;
+}
+
+.program-row--continuation:hover {
+  background: rgba(123, 109, 141, 0.04);
+}
+
+.school-row + .program-row--continuation td {
+  border-top: 1px solid var(--line);
+}
+
 @media (max-width: 1200px) {
   .filter-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -691,108 +829,5 @@ body.dark .data-table tbody tr:nth-child(even) {
 
   .detail-grid {
     grid-template-columns: 1fr;
-  }
-
-  .school-row {
-    cursor: pointer;
-    transition: background 0.16s ease;
-  }
-
-  .school-row:hover {
-    background: rgba(123, 109, 141, 0.06);
-  }
-
-  .school-name-cell {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-  }
-
-  .fold-arrow {
-    display: inline-block;
-    width: 14px;
-    color: var(--muted);
-    font-size: 13px;
-    flex: 0 0 auto;
-  }
-
-  .school-name {
-    line-height: 1.35;
-  }
-
-  .school-projects-row td {
-    background: transparent;
-    padding: 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .school-projects-cell {
-    padding: 0 !important;
-  }
-
-  .nested-table-wrap {
-    padding: 0 0 10px;
-    background: rgba(0, 0, 0, 0.015);
-  }
-
-  body.dark .nested-table-wrap {
-    background: rgba(255, 255, 255, 0.025);
-  }
-
-  .nested-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-  }
-
-  .nested-table thead th {
-    position: static;
-    background: transparent;
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 700;
-    padding: 12px 10px 8px;
-    border-bottom: 1px solid var(--line);
-    white-space: nowrap;
-  }
-
-  .nested-table tbody td {
-    padding: 12px 10px;
-    border-bottom: 1px solid var(--line);
-    font-size: 13px;
-    vertical-align: top;
-    word-break: break-word;
-  }
-
-  .program-sub-row:last-child td {
-    border-bottom: none;
-  }
-
-  .program-link {
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 700;
-  }
-
-  .program-link:hover {
-    text-decoration: underline;
-  }
-
-  .inline-link-btn {
-    appearance: none;
-    border: none;
-    background: transparent;
-    padding: 0;
-    margin: 0;
-    color: var(--thead);
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
-    text-align: left;
-  }
-
-  .inline-link-btn:hover {
-    text-decoration: underline;
   }
 }
