@@ -759,12 +759,6 @@ body.dark .data-table tbody tr:nth-child(even) {
   align-items: flex-start;
 }
 
-.data-table tbody td:nth-child(6) .inline-link-btn,
-.data-table tbody td:nth-child(7) .inline-link-btn,
-.data-table tbody td:nth-child(8) .inline-link-btn {
-  align-items: flex-start;
-}
-
 .table-empty {
   text-align: center;
   color: var(--muted);
@@ -848,9 +842,7 @@ body.dark .data-table tbody tr:nth-child(even) {
 .location-cell .inline-link-btn {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  display: block;
   width: 100%;
   height: 100%;
   padding: 14px 10px;
@@ -863,6 +855,9 @@ body.dark .data-table tbody tr:nth-child(even) {
   text-align: left;
   cursor: pointer;
   transition: color 0.16s ease;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 tr:has(.location-cell:hover) .location-cell .inline-link-btn {
