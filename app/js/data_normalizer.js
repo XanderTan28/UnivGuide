@@ -62,12 +62,16 @@ function buildCampusCityMap(rows) {
   return indexBy(rows, 'campus', 'city');
 }
 
+function buildFacultyGroupMap(rows) {
+  return indexBy(rows, 'faculty', 'faculty_group');
+}
+
 function buildProgramId(program) {
   return slugify(
     [
       program.university_slug,
       program.program,
-      program.faculty,
+      program.faculty_raw,
       program.campus_raw,
       program.duration
     ].join('_')
@@ -142,6 +146,7 @@ export function normalizePrograms(loaded) {
 
   const rankingMap = buildRankingMap(mappings.rankingRows);
   const displayNameMap = buildDisplayNameMap(mappings.displayNameRows);
+  const facultyGroupMap = buildFacultyGroupMap(mappings.facultyGroupRows);
 
   const results = [];
 
@@ -154,7 +159,14 @@ export function normalizePrograms(loaded) {
     const ranking = rankingMap[universitySlug] || { qs: null, the: null, usnews: null };
 
     (bundle.programRows || []).forEach((row) => {
-      const campusList = splitPlusValues(row.campus);
+      const facultyRaw = String(row.faculty || '').trim();
+      const facultyList = splitPlusValues(facultyRaw);
+      const facultyGroupList = unique(
+        facultyList.map((faculty) => facultyGroupMap[faculty]).filter(Boolean)
+      );
+
+      const campusRaw = String(row.campus || '').trim();
+      const campusList = splitPlusValues(campusRaw);
 
       const cityList = unique(
         campusList
@@ -197,15 +209,20 @@ export function normalizePrograms(loaded) {
       const residencyList = unique(
         countryList.map((country) => residencyMap[country]).filter(Boolean)
       );
-      
+
       const normalized = {
         university_slug: universitySlug,
         display_name: displayName,
         manifest_order: bundle.manifest_order,
 
         program: String(row.program || '').trim(),
-        faculty: String(row.faculty || '').trim(),
-        campus_raw: String(row.campus || '').trim(),
+
+        faculty_raw: facultyRaw,
+        faculty_list: facultyList,
+        faculty_group_list: facultyGroupList,
+        faculty_group: facultyGroupList.join('+'),
+
+        campus_raw: campusRaw,
         campus_list: campusList,
 
         city_list: cityList,
@@ -215,8 +232,8 @@ export function normalizePrograms(loaded) {
         city_scale_list: cityScaleList,
         climate_list: climateList,
 
-        language_list: languageList,                 // 给前端展示/筛选用：难度1、难度2……
-        language_score_list: languageScoreList,      // 给后续打分器用
+        language_list: languageList,
+        language_score_list: languageScoreList,
         language_order: languageOrderList.length ? Math.min(...languageOrderList) : null,
 
         residency_list: residencyList,

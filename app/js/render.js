@@ -328,7 +328,7 @@ function getDefaultFilterState(programs) {
     countries: [...options.countries],
     cities: [...options.cities],
     campuses: [...options.campuses],
-    faculties: [...options.faculties],
+    facultyGroups: [...options.facultyGroups],
     durations: [...options.durations],
     cityScales: [...options.cityScales],
     climates: [...options.climates],
@@ -385,8 +385,8 @@ function renderActiveTags(ui, programs) {
     (ui.campuses || []).forEach((v) => tags.push(`校区：${v}`));
   }
 
-  if (!isSameSelection(ui.faculties, defaults.faculties)) {
-    (ui.faculties || []).forEach((v) => tags.push(`学院：${v}`));
+  if (!isSameSelection(ui.facultyGroups, defaults.facultyGroups)) {
+    (ui.facultyGroups || []).forEach((v) => tags.push(`学院大类：${v}`));
   }
 
   if (!isSameSelection(ui.durations, defaults.durations)) {
@@ -584,7 +584,7 @@ function renderSchoolMainRow(school, rank) {
         <span class="school-name">${escapeHtml(school.display_name)}</span>
       </td>
       <td>${renderProgramLink(program.program, program.url)}</td>
-      <td>${escapeHtml(program.faculty || '')}</td>
+      <td>${escapeHtml(program.faculty_raw || '')}</td>
       <td>${escapeHtml((program.campus_list || []).join(' + '))}</td>
       <td class="location-cell">${renderLocationCell('city', location)}</td>
       <td class="location-cell">${renderLocationCell('country', location)}</td>
@@ -615,7 +615,7 @@ function renderProgramContinuationRows(school) {
           <td></td>
           <td></td>
           <td>${renderProgramLink(program.program, program.url)}</td>
-          <td>${escapeHtml(program.faculty || '')}</td>
+          <td>${escapeHtml(program.faculty_raw || '')}</td>
           <td>${escapeHtml((program.campus_list || []).join(' + '))}</td>
           <td class="location-cell">${renderLocationCell('city', location)}</td>
           <td class="location-cell">${renderLocationCell('country', location)}</td>
@@ -710,10 +710,10 @@ export function renderFilterOptions(programs, ui) {
 
   renderCheckboxDropdown(
     'facultySelect',
-    buildEntries(options.faculties),
-    ui.faculties,
+    buildEntries(options.facultyGroups),
+    ui.facultyGroups,
     '全部',
-    '学院'
+    '学院大类'
   );
 
   renderCheckboxDropdown(
@@ -744,7 +744,7 @@ export function renderFilterOptions(programs, ui) {
       { value: 'the', label: 'THE' },
       { value: 'usnews', label: 'US News' },
       { value: 'program', label: '项目名称' },
-      { value: 'faculty', label: '学院' },
+      { value: 'faculty_group', label: '学院大类' },
       { value: 'duration', label: '学制' },
       { value: 'city', label: '城市' },
       { value: 'country', label: '国家' },
@@ -859,7 +859,7 @@ function resetUiState(ui, programs) {
   ui.countries = [...options.countries];
   ui.cities = [...options.cities];
   ui.campuses = [...options.campuses];
-  ui.faculties = [...options.faculties];
+  ui.facultyGroups = [...options.facultyGroups];
   ui.durations = [...options.durations];
   ui.cityScales = [...options.cityScales];
   ui.climates = [...options.climates];
@@ -879,7 +879,8 @@ function exportProgramsToCsv(programs) {
     'display_name',
     'manifest_order',
     'program',
-    'faculty',
+    'faculty_raw',
+    'faculty_group',
     'campus',
     'city',
     'country',
@@ -907,7 +908,8 @@ function exportProgramsToCsv(programs) {
         p.display_name,
         p.manifest_order,
         p.program,
-        p.faculty,
+        p.faculty_raw,
+        (p.faculty_group_list || []).join('+'),
         (p.campus_list || []).join('+'),
         (p.city_list || []).join('+'),
         (p.country_list || []).join('+'),
@@ -1010,7 +1012,7 @@ export function bindDynamicFilterEvents(state, refresh) {
     ['citySelect', 'cities'],
     ['schoolSelect', 'schools'],
     ['campusSelect', 'campuses'],
-    ['facultySelect', 'faculties'],
+    ['facultySelect', 'facultyGroups'],
     ['durationSelect', 'durations'],
     ['engTaughtSelect', 'engTaught']
   ].forEach(([hostId, uiKey]) => {

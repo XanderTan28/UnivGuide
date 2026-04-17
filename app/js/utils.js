@@ -158,9 +158,14 @@ export function matchesSearch(program, keyword) {
     program.university_slug,
     program.display_name,
     program.program,
-    program.faculty,
+
+    program.faculty_raw,
+    ...(program.faculty_list || []),
+    ...(program.faculty_group_list || []),
+
     program.campus_raw,
     ...(program.campus_list || []),
+
     ...(program.city_list || []),
     ...(program.country_list || []),
     ...(program.region_list || []),
@@ -168,6 +173,7 @@ export function matchesSearch(program, keyword) {
     ...(program.climate_list || []),
     ...(program.language_list || []),
     ...(program.residency_list || []),
+
     program.duration,
     program.eng_taught,
     program.type

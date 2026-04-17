@@ -21,7 +21,7 @@ const state = {
     countries: [],
     cities: [],
     campuses: [],
-    faculties: [],
+    facultyGroups: [],
     durations: [],
     engTaught: [],
     cityScales: [],
@@ -62,7 +62,7 @@ async function bootstrap() {
     state.ui.countries = [...options.countries];
     state.ui.cities = [...options.cities];
     state.ui.campuses = [...options.campuses];
-    state.ui.faculties = [...options.faculties];
+    state.ui.facultyGroups = [...options.facultyGroups];
     state.ui.durations = [...options.durations];
     state.ui.cityScales = [...options.cityScales];
     state.ui.climates = [...options.climates];

@@ -19,7 +19,7 @@ export function applyFilters(programs, ui) {
     if (!matchArray(ui.countries, program.country_list)) return false;
     if (!matchArray(ui.cities, program.city_list)) return false;
     if (!matchArray(ui.campuses, program.campus_list)) return false;
-    if (!matchArray(ui.faculties, [program.faculty])) return false;
+    if (!matchArray(ui.facultyGroups, program.faculty_group_list)) return false;
     if (!matchArray(ui.durations, [program.duration])) return false;
     if (!matchArray(ui.cityScales, program.city_scale_list)) return false;
     if (!matchArray(ui.climates, program.climate_list)) return false;
@@ -55,7 +55,7 @@ export function buildFilterOptions(programs) {
     countries: new Set(),
     cities: new Set(),
     campuses: new Set(),
-    faculties: new Set(),
+    facultyGroups: new Set(),
     durations: new Set(),
     cityScales: new Set(),
     climates: new Set(),
@@ -75,7 +75,7 @@ export function buildFilterOptions(programs) {
     (program.language_list || []).forEach((v) => options.languages.add(v));
     (program.residency_list || []).forEach((v) => options.residencies.add(v));
 
-    if (program.faculty) options.faculties.add(program.faculty);
+    (program.faculty_group_list || []).forEach((v) => options.facultyGroups.add(v));
     if (program.duration) options.durations.add(program.duration);
   });
 
@@ -85,7 +85,7 @@ export function buildFilterOptions(programs) {
     countries: [...options.countries].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
     cities: [...options.cities].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
     campuses: [...options.campuses].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
-    faculties: [...options.faculties].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
+    facultyGroups: [...options.facultyGroups].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
     durations: [...options.durations].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
     cityScales: [...options.cityScales].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),
     climates: [...options.climates].sort((a, b) => String(a).localeCompare(String(b), 'zh-CN')),

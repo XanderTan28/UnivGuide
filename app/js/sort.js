@@ -25,8 +25,12 @@ function comparePrograms(a, b, metric, direction) {
     case 'program':
       return compareNullableText(a.program, b.program, direction);
 
-    case 'faculty':
-      return compareNullableText(a.faculty, b.faculty, direction);
+    case 'faculty_group':
+      return compareNullableText(
+        firstValue(a.faculty_group_list),
+        firstValue(b.faculty_group_list),
+        direction
+      );
 
     case 'duration':
       return compareNullableText(a.duration, b.duration, direction);
@@ -40,7 +44,7 @@ function comparePrograms(a, b, metric, direction) {
     case 'region':
       return compareNullableText(firstValue(a.region_list), firstValue(b.region_list), direction);
 
-    case 'language':{
+    case 'language': {
       const byOrder = compareNullableNumber(a.language_order, b.language_order, direction);
       if (byOrder !== 0) return byOrder;
       return compareNullableText(firstValue(a.language_list), firstValue(b.language_list), direction);

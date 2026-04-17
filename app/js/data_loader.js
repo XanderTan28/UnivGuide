@@ -33,7 +33,8 @@ export async function loadAllData() {
     regionRows,
     residencyRows,
     rankingRows,
-    displayNameRows
+    displayNameRows,
+    facultyGroupRows
   ] = await Promise.all([
     fetchCSV('./data/mappings/city_scale.csv'),
     fetchCSV('./data/mappings/climate.csv'),
@@ -42,7 +43,8 @@ export async function loadAllData() {
     fetchCSV('./data/mappings/region.csv'),
     fetchCSV('./data/mappings/residency.csv'),
     fetchCSV('./data/mappings/rankings.csv'),
-    fetchCSV('./data/mappings/display_name.csv')
+    fetchCSV('./data/mappings/display_name.csv'),
+    fetchCSV('./data/mappings/faculty.csv')
   ]);
 
   const schoolBundles = await Promise.all(
@@ -74,7 +76,8 @@ export async function loadAllData() {
       regionRows,
       residencyRows,
       rankingRows,
-      displayNameRows
+      displayNameRows,
+      facultyGroupRows
     }
   };
 }
