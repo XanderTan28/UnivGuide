@@ -5,6 +5,11 @@
     "uniColor": "red"
   },
   {
+    "slug": "nus",
+    "enabled": true,
+    "uniColor": "red"
+  },  
+  {
     "slug": "melbourne",
     "enabled": true,
     "uniColor": "orange"
