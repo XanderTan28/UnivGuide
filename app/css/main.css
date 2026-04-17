@@ -756,6 +756,7 @@ body.dark .data-table tbody tr:nth-child(even) {
   white-space: normal;
   word-break: break-word;
   line-height: 1.45;
+  align-items: flex-start;
 }
 
 .data-table tbody td:nth-child(6) .inline-link-btn,
