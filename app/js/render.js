@@ -242,8 +242,6 @@ function renderProgramLink(programName, url) {
 function renderSchoolMainRow(school, rank) {
   const program = school.representativeProgram || {};
   const location = buildProgramLocation(program);
-  const expanded = expandedUniversitySet.has(school.university_slug);
-  const arrow = expanded ? '▾' : '▸';
 
   return `
     <tr
@@ -252,15 +250,14 @@ function renderSchoolMainRow(school, rank) {
     >
       <td>${rank}</td>
       <td class="school-name-cell">
-        <span class="fold-arrow">${arrow}</span>
         <span class="school-name">${escapeHtml(school.display_name)}</span>
       </td>
       <td>${renderProgramLink(program.program, program.url)}</td>
       <td>${escapeHtml(program.faculty || '')}</td>
       <td>${escapeHtml((program.campus_list || []).join(' + '))}</td>
-      <td>${renderLocationCell('city', location)}</td>
-      <td>${renderLocationCell('country', location)}</td>
-      <td>${renderLocationCell('region', location)}</td>
+      <td class="location-cell">${renderLocationCell('city', location)}</td>
+      <td class="location-cell">${renderLocationCell('country', location)}</td>
+      <td class="location-cell">${renderLocationCell('region', location)}</td>
       <td>${escapeHtml(program.duration || '')}</td>
       <td>${escapeHtml(textYesNo(program.eng_taught || ''))}</td>
       <td>${escapeHtml(program.type || '')}</td>
@@ -289,9 +286,9 @@ function renderProgramContinuationRows(school) {
           <td>${renderProgramLink(program.program, program.url)}</td>
           <td>${escapeHtml(program.faculty || '')}</td>
           <td>${escapeHtml((program.campus_list || []).join(' + '))}</td>
-          <td>${renderLocationCell('city', location)}</td>
-          <td>${renderLocationCell('country', location)}</td>
-          <td>${renderLocationCell('region', location)}</td>
+          <td class="location-cell">${renderLocationCell('city', location)}</td>
+          <td class="location-cell">${renderLocationCell('country', location)}</td>
+          <td class="location-cell">${renderLocationCell('region', location)}</td>
           <td>${escapeHtml(program.duration || '')}</td>
           <td>${escapeHtml(textYesNo(program.eng_taught || ''))}</td>
           <td>${escapeHtml(program.type || '')}</td>
