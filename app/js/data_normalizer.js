@@ -110,8 +110,16 @@ function buildLanguageMaps(rows) {
       scoreMap[city] = score;
     }
 
+    const languageLabelMap = {
+      1: '能说中文',
+      2: '英文主导',
+      3: '都会英文',
+      4: '一半会英文',
+      5: '英文不方便'
+    };
+
     if (order != null) {
-      difficultyMap[city] = `难度${order}`;
+      difficultyMap[city] = languageLabelMap[order] || `未定义${order}`;
       orderMap[city] = order;
     }
   });
