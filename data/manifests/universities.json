@@ -3,5 +3,10 @@
     "slug": "hku",
     "enabled": true,
     "uniColor": "red"
+  },
+  {
+    "slug": "melbourne",
+    "enabled": true,
+    "uniColor": "orange"
   }
 ]
