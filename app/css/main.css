@@ -747,6 +747,21 @@ body.dark .data-table tbody tr:nth-child(even) {
 .data-table tbody td:nth-child(8) {
   min-width: 84px;
   max-width: 110px;
+  white-space: normal;
+}
+
+.data-table tbody td:nth-child(6) .inline-link-btn,
+.data-table tbody td:nth-child(7) .inline-link-btn,
+.data-table tbody td:nth-child(8) .inline-link-btn {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.45;
+}
+
+.data-table tbody td:nth-child(6) .inline-link-btn,
+.data-table tbody td:nth-child(7) .inline-link-btn,
+.data-table tbody td:nth-child(8) .inline-link-btn {
+  align-items: flex-start;
 }
 
 .table-empty {

@@ -15,6 +15,20 @@ function setText(id, value) {
   if (el) el.textContent = value ?? '';
 }
 
+function joinDisplayValues(values, options = {}) {
+  const { unique = false, separator = ', ' } = options;
+
+  let result = (values || [])
+    .map((v) => String(v || '').trim())
+    .filter(Boolean);
+
+  if (unique) {
+    result = [...new Set(result)];
+  }
+
+  return result.join(separator);
+}
+
 function buildSchoolEntries(programs) {
   const map = {};
   (programs || []).forEach((program) => {
@@ -184,15 +198,6 @@ function renderSortDirectionToggle(hostId, selectedValue = 'asc') {
       </button>
     </div>
   `;
-}
-
-function readCheckboxDropdownValues(hostId) {
-  const host = document.getElementById(hostId);
-  if (!host) return [];
-
-  return [
-    ...host.querySelectorAll('.filter-dropdown__checkbox:checked:not(.filter-dropdown__checkbox--select-all)')
-  ].map((input) => input.value);
 }
 
 function bindDropdownInteractions(hostId, ui, uiKey, refresh) {
@@ -555,13 +560,13 @@ function getRepresentativeProgram(programs) {
 
 function buildProgramLocation(program) {
   return {
-    city: (program?.city_list || [])[0] || '',
-    country: (program?.country_list || [])[0] || '',
-    region: (program?.region_list || [])[0] || '',
-    cityScale: (program?.city_scale_list || [])[0] || '',
-    climate: (program?.climate_list || [])[0] || '',
-    language: (program?.language_list || [])[0] || '',
-    residency: (program?.residency_list || [])[0] || ''
+    city: joinDisplayValues(program?.city_list || [], { unique: true }),
+    country: joinDisplayValues(program?.country_list || [], { unique: true }),
+    region: joinDisplayValues(program?.region_list || [], { unique: true }),
+    cityScale: joinDisplayValues(program?.city_scale_list || [], { unique: true }),
+    climate: joinDisplayValues(program?.climate_list || [], { unique: true }),
+    language: joinDisplayValues(program?.language_list || [], { unique: true }),
+    residency: joinDisplayValues(program?.residency_list || [], { unique: true })
   };
 }
 
@@ -753,8 +758,8 @@ function renderSchoolMainRow(school, rank) {
         <span class="school-name">${escapeHtml(school.display_name)}</span>
       </td>
       <td>${renderProgramLink(program.program, program.url)}</td>
-      <td>${escapeHtml((program.faculty_list || []).join(', '))}</td>
-      <td>${escapeHtml((program.campus_list || []).join(', '))}</td>
+      <td>${escapeHtml(joinDisplayValues(program.faculty_list || []))}</td>
+      <td>${escapeHtml(joinDisplayValues(program.campus_list || []))}</td>
       <td class="location-cell">${renderLocationCell('city', location)}</td>
       <td class="location-cell">${renderLocationCell('country', location)}</td>
       <td class="location-cell">${renderLocationCell('region', location)}</td>
@@ -784,8 +789,8 @@ function renderProgramContinuationRows(school) {
           <td></td>
           <td></td>
           <td>${renderProgramLink(program.program, program.url)}</td>
-          <td>${escapeHtml((program.faculty_list || []).join(', '))}</td>
-          <td>${escapeHtml((program.campus_list || []).join(', '))}</td>
+          <td>${escapeHtml(joinDisplayValues(program.faculty_list || []))}</td>
+          <td>${escapeHtml(joinDisplayValues(program.campus_list || []))}</td>
           <td class="location-cell">${renderLocationCell('city', location)}</td>
           <td class="location-cell">${renderLocationCell('country', location)}</td>
           <td class="location-cell">${renderLocationCell('region', location)}</td>
@@ -953,10 +958,7 @@ export function renderFilterOptions(programs, ui, mappings) {
 
 export function renderSummary(filteredPrograms, allPrograms) {
   const filtered = filteredPrograms || [];
-  const all = allPrograms || [];
-
   const schoolCount = new Set(filtered.map((p) => p.university_slug)).size;
-  const totalSchoolCount = new Set(all.map((p) => p.university_slug)).size;
 
   setText('resultCount', `${schoolCount} 所大学 / ${filtered.length} 个项目`);
 

@@ -6,6 +6,20 @@ export const languageLabelMap = {
   5: '英文不方便'
 };
 
+export function joinDisplayValues(values, options = {}) {
+  const { unique = false, separator = ', ' } = options;
+
+  let result = (values || [])
+    .map((v) => String(v || '').trim())
+    .filter(Boolean);
+
+  if (unique) {
+    result = [...new Set(result)];
+  }
+
+  return result.join(separator);
+}
+
 export function parseCSV(text) {
   const cleaned = String(text || '').replace(/^\uFEFF/, '');
   const rows = [];
