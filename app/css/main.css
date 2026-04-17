@@ -834,17 +834,14 @@ body.dark .data-table tbody tr:nth-child(even) {
 }
 
 .location-cell {
-  position: relative;
   padding: 0 !important;
   transition: background 0.16s ease;
+  vertical-align: top;
 }
 
 .location-cell .inline-link-btn {
-  position: absolute;
-  inset: 0;
   display: block;
   width: 100%;
-  height: 100%;
   padding: 14px 10px;
   margin: 0;
   border: none;
@@ -856,8 +853,16 @@ body.dark .data-table tbody tr:nth-child(even) {
   cursor: pointer;
   transition: color 0.16s ease;
   white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+
+.location-cell .location-part,
+.location-cell .location-sep {
+  display: inline;
+}
+
+.location-cell .location-sep {
+  white-space: normal;
 }
 
 tr:has(.location-cell:hover) .location-cell .inline-link-btn {

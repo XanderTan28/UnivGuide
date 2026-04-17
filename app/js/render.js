@@ -685,8 +685,23 @@ function buildLocationPayload(location) {
   return encodeURIComponent(JSON.stringify(location));
 }
 
-function formatLocationLabel(label) {
-  return escapeHtml(label || '').replace(/, /g, ',<wbr> ');
+function renderLocationLabel(label) {
+  const parts = String(label || '')
+    .split(/\s*,\s*/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (!parts.length) return '';
+
+  return parts
+    .map((part, index) => {
+      const escaped = escapeHtml(part);
+      const sep = index < parts.length - 1
+        ? `<span class="location-sep">, </span>`
+        : '';
+      return `<span class="location-part">${escaped}</span>${sep}`;
+    })
+    .join('');
 }
 
 function renderLocationCell(type, location) {
@@ -701,7 +716,7 @@ function renderLocationCell(type, location) {
       class="inline-link-btn location-trigger"
       data-location="${buildLocationPayload(location)}"
     >
-      ${formatLocationLabel(label)}
+      ${renderLocationLabel(label)}
     </button>
   `;
 }
