@@ -6,6 +6,7 @@ import {
 } from './utils.js';
 
 const expandedUniversitySet = new Set();
+let currentOpenDropdownHostId = null;
 
 function setText(id, value) {
   const el = document.getElementById(id);
@@ -55,7 +56,7 @@ function summarizeSelected(entries, selectedValues, fallback = '全部') {
   return `已选 ${selectedLabels.length} 项`;
 }
 
-function renderCheckboxDropdown(hostId, entries, selectedValues, fallback = '全部') {
+function renderCheckboxDropdown(hostId, entries, selectedValues, fallback = '全部', prefix = '') {
   const host = document.getElementById(hostId);
   if (!host) return;
 
@@ -72,7 +73,13 @@ function renderCheckboxDropdown(hostId, entries, selectedValues, fallback = '全
   host.innerHTML = `
     <div class="filter-dropdown" data-filter-id="${escapeHtml(hostId)}">
       <button type="button" class="filter-dropdown__button">
-        <span class="filter-dropdown__label">${escapeHtml(summary)}</span>
+        <span class="filter-dropdown__label">
+          ${
+            prefix
+              ? `<span class="filter-dropdown__label-prefix">${escapeHtml(prefix)}：</span><span class="filter-dropdown__label-value">${escapeHtml(summary)}</span>`
+              : `<span class="filter-dropdown__label-value">${escapeHtml(summary)}</span>`
+          }
+        </span>
       </button>
 
       <div class="filter-dropdown__panel">
@@ -110,7 +117,7 @@ function renderCheckboxDropdown(hostId, entries, selectedValues, fallback = '全
   `;
 }
 
-function renderSingleSelectDropdown(hostId, entries, selectedValue, fallback = '请选择') {
+function renderSingleSelectDropdown(hostId, entries, selectedValue, fallback = '请选择', prefix = '') {
   const host = document.getElementById(hostId);
   if (!host) return;
 
@@ -123,7 +130,13 @@ function renderSingleSelectDropdown(hostId, entries, selectedValue, fallback = '
   host.innerHTML = `
     <div class="filter-dropdown" data-filter-id="${escapeHtml(hostId)}">
       <button type="button" class="filter-dropdown__button">
-        <span class="filter-dropdown__label">${escapeHtml(summary)}</span>
+        <span class="filter-dropdown__label">
+          ${
+            prefix
+              ? `<span class="filter-dropdown__label-prefix">${escapeHtml(prefix)}：</span><span class="filter-dropdown__label-value">${escapeHtml(summary)}</span>`
+              : `<span class="filter-dropdown__label-value">${escapeHtml(summary)}</span>`
+          }
+        </span>
       </button>
 
       <div class="filter-dropdown__panel">
@@ -195,26 +208,35 @@ function bindDropdownInteractions(hostId, ui, uiKey, refresh) {
   button.addEventListener('click', (e) => {
     e.stopPropagation();
 
+    const isOpening = !dropdown.classList.contains('is-open');
+
     document.querySelectorAll('.filter-dropdown.is-open').forEach((el) => {
       if (el !== dropdown) el.classList.remove('is-open');
     });
 
-    dropdown.classList.toggle('is-open');
+    dropdown.classList.toggle('is-open', isOpening);
+    currentOpenDropdownHostId = isOpening ? hostId : null;
   });
 
   panel.addEventListener('click', (e) => {
     e.stopPropagation();
+  });
 
-    const selectAllRow = e.target.closest('[data-action="toggle-all"]');
-    if (selectAllRow) {
-      const selectAllCheckbox = host.querySelector('.filter-dropdown__checkbox--select-all');
-      const itemCheckboxes = [
-        ...host.querySelectorAll('.filter-dropdown__checkbox:not(.filter-dropdown__checkbox--select-all)')
-      ];
+  panel.addEventListener('change', (e) => {
+    e.stopPropagation();
 
-      const shouldSelectAll = !selectAllCheckbox.checked;
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    if (!target.classList.contains('filter-dropdown__checkbox')) return;
 
-      selectAllCheckbox.checked = shouldSelectAll;
+    const selectAllCheckbox = host.querySelector('.filter-dropdown__checkbox--select-all');
+    const itemCheckboxes = [
+      ...host.querySelectorAll('.filter-dropdown__checkbox:not(.filter-dropdown__checkbox--select-all)')
+    ];
+
+    if (target.classList.contains('filter-dropdown__checkbox--select-all')) {
+      const shouldSelectAll = target.checked;
+
       itemCheckboxes.forEach((input) => {
         input.checked = shouldSelectAll;
       });
@@ -222,22 +244,10 @@ function bindDropdownInteractions(hostId, ui, uiKey, refresh) {
       ui[uiKey] = shouldSelectAll
         ? itemCheckboxes.map((input) => input.value)
         : [];
-
-      refresh();
-      return;
-    }
-
-    if (e.target.classList.contains('filter-dropdown__checkbox')) {
-      if (e.target.classList.contains('filter-dropdown__checkbox--select-all')) {
-        return;
-      }
-
-      ui[uiKey] = readCheckboxDropdownValues(hostId);
-
-      const selectAllCheckbox = host.querySelector('.filter-dropdown__checkbox--select-all');
-      const itemCheckboxes = [
-        ...host.querySelectorAll('.filter-dropdown__checkbox:not(.filter-dropdown__checkbox--select-all)')
-      ];
+    } else {
+      ui[uiKey] = itemCheckboxes
+        .filter((input) => input.checked)
+        .map((input) => input.value);
 
       const allChecked =
         itemCheckboxes.length > 0 &&
@@ -246,9 +256,10 @@ function bindDropdownInteractions(hostId, ui, uiKey, refresh) {
       if (selectAllCheckbox) {
         selectAllCheckbox.checked = allChecked;
       }
-
-      refresh();
     }
+
+    currentOpenDropdownHostId = hostId;
+    refresh();
   });
 }
 
@@ -628,67 +639,89 @@ export function renderFilterOptions(programs, ui) {
   renderCheckboxDropdown(
     'cityScaleSelect',
     buildEntries(options.cityScales),
-    ui.cityScales
+    ui.cityScales,
+    '全部',
+    '城市规模'
   );
 
   renderCheckboxDropdown(
     'climateSelect',
     buildEntries(options.climates),
-    ui.climates
+    ui.climates,
+    '全部',
+    '气候'
   );
 
   renderCheckboxDropdown(
     'languageSelect',
     buildEntries(options.languages),
-    ui.languages
+    ui.languages,
+    '全部',
+    '语言环境'
   );
 
   renderCheckboxDropdown(
     'residencySelect',
     buildEntries(options.residencies),
-    ui.residencies
+    ui.residencies,
+    '全部',
+    '居留'
   );
 
   renderCheckboxDropdown(
     'regionSelect',
     buildEntries(options.regions),
-    ui.regions
+    ui.regions,
+    '全部',
+    '地区'
   );
 
   renderCheckboxDropdown(
     'countrySelect',
     buildEntries(options.countries),
-    ui.countries
+    ui.countries,
+    '全部',
+    '国家'
   );
 
   renderCheckboxDropdown(
     'citySelect',
     buildEntries(options.cities),
-    ui.cities
+    ui.cities,
+    '全部',
+    '城市'
   );
 
   renderCheckboxDropdown(
     'schoolSelect',
     buildSchoolEntries(programs),
-    ui.schools
+    ui.schools,
+    '全部',
+    '大学'
   );
 
   renderCheckboxDropdown(
     'campusSelect',
     buildEntries(options.campuses),
-    ui.campuses
+    ui.campuses,
+    '全部',
+    '校区'
   );
 
   renderCheckboxDropdown(
     'facultySelect',
     buildEntries(options.faculties),
-    ui.faculties
+    ui.faculties,
+    '全部',
+    '学院'
   );
 
   renderCheckboxDropdown(
     'durationSelect',
     buildEntries(options.durations),
-    ui.durations
+    ui.durations,
+    '全部',
+    '学制'
   );
 
   renderCheckboxDropdown(
@@ -699,7 +732,8 @@ export function renderFilterOptions(programs, ui) {
       { value: 'unknown', label: '未知' }
     ],
     ui.engTaught,
-    '英授'
+    '英授',
+    '授课语言'
   );
 
   renderSingleSelectDropdown(
@@ -721,7 +755,8 @@ export function renderFilterOptions(programs, ui) {
       { value: 'residency', label: '居留' }
     ],
     ui.sortMetric,
-    '排位'
+    '排位',
+    '排序指标'
   );
 
   renderSortDirectionToggle('sortDirectionToggle', ui.sortDirection);
@@ -729,6 +764,14 @@ export function renderFilterOptions(programs, ui) {
   const searchInput = document.getElementById('searchInput');
   if (searchInput && searchInput.value !== (ui.search || '')) {
     searchInput.value = ui.search || '';
+  }
+
+  if (currentOpenDropdownHostId) {
+    const openHost = document.getElementById(currentOpenDropdownHostId);
+    const openDropdown = openHost?.querySelector('.filter-dropdown');
+    if (openDropdown) {
+      openDropdown.classList.add('is-open');
+    }
   }
 
   renderActiveTags(ui, programs);
@@ -952,6 +995,7 @@ export function bindStaticEvents(state, refresh) {
     document.querySelectorAll('.filter-dropdown.is-open').forEach((el) => {
       el.classList.remove('is-open');
     });
+    currentOpenDropdownHostId = null;
   });
 
   const themeToggleBtn = document.getElementById('themeToggleBtn');
