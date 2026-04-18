@@ -885,46 +885,25 @@ tr:has(.location-cell:hover) .location-cell {
 
 .detail-dialog__header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  gap: 24px;
-  padding: 28px 30px 18px;
-  border-bottom: 1px solid var(--line);
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.detail-dialog__heading {
-  min-width: 0;
+.detail-dialog__header--close-only {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  min-height: auto;
+  padding: 8px 10px 0;
+  gap: 0;
 }
 
-.detail-dialog__eyebrow {
-  margin: 0 0 10px;
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 700;
-}
-
-.detail-dialog__title {
-  margin: 0;
-  font-family:
-    "Iowan Old Style",
-    "Palatino Linotype",
-    "Times New Roman",
-    "Songti SC",
-    serif;
-  font-size: 34px;
-  line-height: 1.08;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.detail-dialog__subtitle {
-  margin: 12px 0 0;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.5;
+.detail-dialog__header--close-only + .detail-dialog__body {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .detail-dialog__close {
@@ -1020,6 +999,50 @@ body.dark .detail-meta-item {
   color: var(--text);
 }
 
+.detail-section--location-card + .detail-section--location-card {
+  margin-top: 8px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.detail-location-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-location-hero__title {
+  margin: 0;
+  font-family:
+    "Iowan Old Style",
+    "Palatino Linotype",
+    "Times New Roman",
+    "Songti SC",
+    serif;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.detail-location-hero__subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .detail-section--location-card + .detail-section--location-card {
+    padding-top: 18px;
+  }
+
+  .detail-location-hero__title {
+    font-size: 22px;
+  }
+}
+
 @media (max-width: 1200px) {
   .filter-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1054,14 +1077,23 @@ body.dark .detail-meta-item {
     gap: 18px;
   }
 
-  .detail-dialog__title {
-    font-size: 28px;
-  }
-
   .detail-dialog__body {
     grid-template-columns: 1fr;
     padding: 20px 22px 24px;
     gap: 20px;
+  }
+
+  .detail-dialog__header--close-only {
+    padding: 8px 10px 0;
+    gap: 0;
+  }
+
+  .detail-dialog__header--close-only + .detail-dialog__body {
+    padding-top: 6px;
+  }
+
+  .detail-location-hero__title {
+    font-size: 24px;
   }
 }
 
@@ -1107,14 +1139,6 @@ body.dark .detail-meta-item {
 
   .detail-meta-item--wide {
     grid-column: auto;
-  }
-
-  .detail-dialog__title {
-    font-size: 24px;
-  }
-
-  .detail-dialog__subtitle {
-    font-size: 14px;
   }
 }
 

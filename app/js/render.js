@@ -559,14 +559,49 @@ function getRepresentativeProgram(programs) {
 }
 
 function buildProgramLocation(program) {
+  const cityList = [...new Set((program?.city_list || []).filter(Boolean))];
+
+  const items = cityList.map((city) => {
+    const firstCityIndex = (program?.city_list || []).findIndex((v) => v === city);
+
+    const country =
+      firstCityIndex >= 0 ? (program?.country_list || [])[firstCityIndex] || '' : '';
+
+    const region =
+      firstCityIndex >= 0 ? (program?.region_list || [])[firstCityIndex] || '' : '';
+
+    const cityScale =
+      firstCityIndex >= 0 ? (program?.city_scale_list || [])[firstCityIndex] || '' : '';
+
+    const climate =
+      firstCityIndex >= 0 ? (program?.climate_list || [])[firstCityIndex] || '' : '';
+
+    const language =
+      firstCityIndex >= 0 ? (program?.language_list || [])[firstCityIndex] || '' : '';
+
+    const residency =
+      firstCityIndex >= 0 ? (program?.residency_list || [])[firstCityIndex] || '' : '';
+
+    return {
+      city,
+      country,
+      region,
+      cityScale,
+      climate,
+      language,
+      residency
+    };
+  });
+
   return {
-    city: joinDisplayValues(program?.city_list || [], { unique: true }),
-    country: joinDisplayValues(program?.country_list || [], { unique: true }),
-    region: joinDisplayValues(program?.region_list || [], { unique: true }),
-    cityScale: joinDisplayValues(program?.city_scale_list || [], { unique: true }),
-    climate: joinDisplayValues(program?.climate_list || [], { unique: true }),
-    language: joinDisplayValues(program?.language_list || [], { unique: true }),
-    residency: joinDisplayValues(program?.residency_list || [], { unique: true })
+    items,
+    city: joinDisplayValues(items.map((item) => item.city), { unique: true }),
+    country: joinDisplayValues(items.map((item) => item.country), { unique: true }),
+    region: joinDisplayValues(items.map((item) => item.region), { unique: true }),
+    cityScale: joinDisplayValues(items.map((item) => item.cityScale), { unique: true }),
+    climate: joinDisplayValues(items.map((item) => item.climate), { unique: true }),
+    language: joinDisplayValues(items.map((item) => item.language), { unique: true }),
+    residency: joinDisplayValues(items.map((item) => item.residency), { unique: true })
   };
 }
 
@@ -682,7 +717,7 @@ function groupProgramsByUniversity(programs) {
 }
 
 function buildLocationPayload(location) {
-  return encodeURIComponent(JSON.stringify(location));
+  return encodeURIComponent(JSON.stringify(location?.items || []));
 }
 
 function renderLocationCell(type, location) {
@@ -702,32 +737,78 @@ function renderLocationCell(type, location) {
   `;
 }
 
+function renderLocationDetailCards(locations) {
+  const items = Array.isArray(locations) ? locations.filter(Boolean) : [];
+
+  if (!items.length) {
+    return `
+      <section class="detail-section">
+        <div class="detail-section__head">
+          <h4 class="detail-section__title">环境与适配</h4>
+        </div>
+        <div class="empty-state">暂无地区信息</div>
+      </section>
+    `;
+  }
+
+  return items.map((location) => `
+    <section class="detail-section detail-section--location-card">
+      <div class="detail-section__head">
+        <div class="detail-location-hero">
+          <h4 class="detail-location-hero__title">${escapeHtml(location.city || '地区信息')}</h4>
+          <p class="detail-location-hero__subtitle">
+            ${escapeHtml(
+              [location.country, location.region].filter(Boolean).join(' · ')
+            )}
+          </p>
+        </div>
+      </div>
+
+      <dl class="detail-meta-grid">
+        <div class="detail-meta-item">
+          <dt>城市规模</dt>
+          <dd>${escapeHtml(location.cityScale || '')}</dd>
+        </div>
+
+        <div class="detail-meta-item">
+          <dt>气候</dt>
+          <dd>${escapeHtml(location.climate || '')}</dd>
+        </div>
+
+        <div class="detail-meta-item">
+          <dt>语言环境</dt>
+          <dd>${escapeHtml(location.language || '')}</dd>
+        </div>
+
+        <div class="detail-meta-item">
+          <dt>居留</dt>
+          <dd>${escapeHtml(location.residency || '')}</dd>
+        </div>
+      </dl>
+    </section>
+  `).join('');
+}
+
 function bindLocationTriggers() {
   document.querySelectorAll('.location-trigger').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const payload = btn.dataset.location;
       if (!payload) return;
-      const location = JSON.parse(decodeURIComponent(payload));
-      openLocationDialog(location);
+      const locations = JSON.parse(decodeURIComponent(payload));
+      openLocationDialog(locations);
     });
   });
 }
 
-function openLocationDialog(location) {
+function openLocationDialog(locations) {
   const dialog = document.getElementById('locationDetailDialog');
-  if (!dialog) return;
+  const body = document.getElementById('locationDetailBody');
+  if (!dialog || !body) return;
 
-  setText('locationDetailTitle', location.city || '地区信息');
-  setText('locationDetailSubtitle', `${location.country || ''} · ${location.region || ''}`);
+  const items = Array.isArray(locations) ? locations.filter(Boolean) : [];
 
-  setText('locCity', location.city || '');
-  setText('locCountry', location.country || '');
-  setText('locRegion', location.region || '');
-  setText('locCityScale', location.cityScale || '');
-  setText('locClimate', location.climate || '');
-  setText('locLanguage', location.language || '');
-  setText('locResidency', location.residency || '');
+  body.innerHTML = renderLocationDetailCards(items);
 
   if (typeof dialog.showModal === 'function') {
     dialog.showModal();
