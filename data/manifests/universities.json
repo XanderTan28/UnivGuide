@@ -8,7 +8,12 @@
     "slug": "nus",
     "enabled": true,
     "uniColor": "red"
-  },  
+  }, 
+  {
+    "slug": "eth",
+    "enabled": true,
+    "uniColor": "gray"
+  },
   {
     "slug": "melbourne",
     "enabled": true,
