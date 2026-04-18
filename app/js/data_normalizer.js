@@ -124,6 +124,54 @@ function buildLanguageMaps(rows) {
   };
 }
 
+function buildLocationItems({
+  campusList,
+  campusCityMap,
+  countryMap,
+  regionMap,
+  cityScaleMap,
+  climateMap,
+  languageDifficultyMap,
+  languageScoreMap,
+  languageOrderMap,
+  residencyMap
+}) {
+  const items = [];
+  const seenCities = new Set();
+
+  (campusList || []).forEach((campus) => {
+    const city = campusCityMap[campus];
+    if (!city) return;
+    if (seenCities.has(city)) return;
+
+    seenCities.add(city);
+
+    const country = countryMap[city] || '';
+    const region = country ? (regionMap[country] || '') : '';
+    const cityScale = cityScaleMap[city] || '';
+    const climate = climateMap[city] || '';
+    const language = languageDifficultyMap[city] || '';
+    const languageScore = languageScoreMap[city] ?? null;
+    const languageOrder = languageOrderMap[city] ?? null;
+    const residency = country ? (residencyMap[country] || '') : '';
+
+    items.push({
+      campus,
+      city,
+      country,
+      region,
+      city_scale: cityScale,
+      climate,
+      language,
+      language_score: languageScore,
+      language_order: languageOrder,
+      residency
+    });
+  });
+
+  return items;
+}
+
 export function normalizePrograms(loaded) {
   const { mappings, schoolBundles } = loaded;
 
@@ -169,46 +217,57 @@ export function normalizePrograms(loaded) {
       const campusRaw = String(row.campus || '').trim();
       const campusList = splitPlusValues(campusRaw);
 
+      const locationItems = buildLocationItems({
+        campusList,
+        campusCityMap,
+        countryMap,
+        regionMap,
+        cityScaleMap,
+        climateMap,
+        languageDifficultyMap,
+        languageScoreMap,
+        languageOrderMap,
+        residencyMap
+      });
+
       const cityList = unique(
-        campusList
-          .map((campus) => campusCityMap[campus])
-          .filter(Boolean)
+        locationItems.map((item) => item.city).filter(Boolean)
       );
 
       const countryList = unique(
-        cityList.map((city) => countryMap[city]).filter(Boolean)
+        locationItems.map((item) => item.country).filter(Boolean)
       );
 
       const regionList = unique(
-        countryList.map((country) => regionMap[country]).filter(Boolean)
+        locationItems.map((item) => item.region).filter(Boolean)
       );
 
       const cityScaleList = unique(
-        cityList.map((city) => cityScaleMap[city]).filter(Boolean)
+        locationItems.map((item) => item.city_scale).filter(Boolean)
       );
 
       const climateList = unique(
-        cityList.map((city) => climateMap[city]).filter(Boolean)
+        locationItems.map((item) => item.climate).filter(Boolean)
       );
 
       const languageList = unique(
-        cityList.map((city) => languageDifficultyMap[city]).filter(Boolean)
+        locationItems.map((item) => item.language).filter(Boolean)
       );
 
       const languageScoreList = unique(
-        cityList
-          .map((city) => languageScoreMap[city])
+        locationItems
+          .map((item) => item.language_score)
           .filter((v) => v != null)
       );
 
       const languageOrderList = unique(
-        cityList
-          .map((city) => languageOrderMap[city])
+        locationItems
+          .map((item) => item.language_order)
           .filter((v) => v != null)
       );
 
       const residencyList = unique(
-        countryList.map((country) => residencyMap[country]).filter(Boolean)
+        locationItems.map((item) => item.residency).filter(Boolean)
       );
 
       const normalized = {
@@ -225,6 +284,8 @@ export function normalizePrograms(loaded) {
 
         campus_raw: campusRaw,
         campus_list: campusList,
+
+        location_items: locationItems,
 
         city_list: cityList,
         country_list: countryList,

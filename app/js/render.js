@@ -559,39 +559,15 @@ function getRepresentativeProgram(programs) {
 }
 
 function buildProgramLocation(program) {
-  const cityList = [...new Set((program?.city_list || []).filter(Boolean))];
-
-  const items = cityList.map((city) => {
-    const firstCityIndex = (program?.city_list || []).findIndex((v) => v === city);
-
-    const country =
-      firstCityIndex >= 0 ? (program?.country_list || [])[firstCityIndex] || '' : '';
-
-    const region =
-      firstCityIndex >= 0 ? (program?.region_list || [])[firstCityIndex] || '' : '';
-
-    const cityScale =
-      firstCityIndex >= 0 ? (program?.city_scale_list || [])[firstCityIndex] || '' : '';
-
-    const climate =
-      firstCityIndex >= 0 ? (program?.climate_list || [])[firstCityIndex] || '' : '';
-
-    const language =
-      firstCityIndex >= 0 ? (program?.language_list || [])[firstCityIndex] || '' : '';
-
-    const residency =
-      firstCityIndex >= 0 ? (program?.residency_list || [])[firstCityIndex] || '' : '';
-
-    return {
-      city,
-      country,
-      region,
-      cityScale,
-      climate,
-      language,
-      residency
-    };
-  });
+  const items = (program?.location_items || []).map((item) => ({
+    city: item.city || '',
+    country: item.country || '',
+    region: item.region || '',
+    cityScale: item.city_scale || '',
+    climate: item.climate || '',
+    language: item.language || '',
+    residency: item.residency || ''
+  }));
 
   return {
     items,
